@@ -2,11 +2,14 @@ package com.backend.user;
 
 import com.backend.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -29,27 +32,17 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginDTO input) throws Exception{
-        try{
-            UserEntity existedUser = userRepository.findByUsername(input.getUsername());
+    public String login(@RequestBody LoginDTO input) throws Exception {
 
-            if(existedUser == null)
-                throw new BadCredentialsException("Not found: User");
+        UserEntity existedUser = userRepository.findByUsername(input.getUsername());
 
-            String hashedPassword = HashService.hash(input.getPassword());
-            System.out.println(existedUser.getId());
-            System.out.println(hashedPassword);
-            System.out.println(existedUser.getPassword());
-            System.out.println(!existedUser.getPassword().equals(hashedPassword));
-            if(!existedUser.getPassword().equals(hashedPassword))
-                throw new BadCredentialsException("Incorrect Password");
+        if (existedUser == null)
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not found: User");
 
+        String hashedPassword = HashService.hash(input.getPassword());
 
-        }
-
-        catch (BadCredentialsException err){
-            throw new Exception("Incorrect username or password", err);
-        }
+        if (!existedUser.getPassword().equals(hashedPassword))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Incorrect Password");
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(input.getUsername());
 
@@ -57,15 +50,15 @@ public class UserController {
     }
 
     @PutMapping("/register")
-    public UserEntity createUser(@RequestBody CreateUserDto input) throws NoSuchAlgorithmException {
-        String hashedPassword = HashService.hash(input.getPassword());
-
+    public UserEntity createUser(@RequestBody CreateUserDto user) throws NoSuchAlgorithmException {
+        String hashedPassword = HashService.hash(user.getPassword());
         Set<RoleEntity> roles = new HashSet<>();
+
         roles.add(new RoleEntity(RoleEnum.ROLE_USER.toString()));
 
-        if(input.isAdmin())
-            roles.add(new RoleEntity(RoleEnum.ROLE_USER.toString()));
+        if (user.isAdmin())
+            roles.add(new RoleEntity(RoleEnum.ROLE_ADMIN.toString()));
 
-        return userRepository.save(new UserEntity(input.getUsername(), hashedPassword, roles, input.getImg()));
+        return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, user.getImg()));
     }
 }
