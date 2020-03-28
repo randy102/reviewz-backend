@@ -3,16 +3,21 @@ package com.backend.user;
 import com.backend.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
+
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
+import java.io.IOException;
+
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,4 +66,22 @@ public class UserController {
 
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, user.getImg()));
     }
+
+    @PostMapping("/upload")
+    public String uploadToLocalFileSystem(@RequestParam("file") MultipartFile upload) throws IOException {
+        MultipartFile multipartFile = upload;
+        String fileName = multipartFile.getOriginalFilename();
+        File file = new File(this.getFolderUpload(), fileName);
+        multipartFile.transferTo(file);
+        return "Success";
+    }
+
+    public File getFolderUpload() {
+        File folderUpload = new File(System.getProperty("user.home") + "/Uploads");
+        if (!folderUpload.exists()) {
+            folderUpload.mkdirs();
+        }
+        return folderUpload;
+    }
+
 }

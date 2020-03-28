@@ -19,7 +19,18 @@ public class Constants {
         NO_AUTH_ROUTE.put("PUT",new HashSet<>());
         NO_AUTH_ROUTE.put("DELETE",new HashSet<>());
 
-        NO_AUTH_ROUTE.get("POST").add("/api/user/login");
-        NO_AUTH_ROUTE.get("PUT").add("/api/user/register");
+        Set<String> POST = NO_AUTH_ROUTE.get("POST");
+        Set<String> PUT = NO_AUTH_ROUTE.get("PUT");
+        Set<String> GET = NO_AUTH_ROUTE.get("GET");
+        Set<String> DELETE = NO_AUTH_ROUTE.get("DELETE");
+
+        // Add Route below ... =>
+
+        GET.add("/files/download/Untitled.png");
+
+        POST.add("/api/user/login");
+        POST.add("/api/user/upload");
+
+        PUT.add("/api/user/register");
     }
 }
