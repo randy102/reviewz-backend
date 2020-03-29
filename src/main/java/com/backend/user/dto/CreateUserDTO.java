@@ -14,6 +14,7 @@ public class CreateUserDTO {
     private String username;
     private String password;
     private String img;
+    private String age;
     @JsonProperty
     private boolean isAdmin;
 }

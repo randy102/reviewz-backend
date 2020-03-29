@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@Document(collection = "rm_image")
+@Document(collection = "mr_image")
 public class ImageEntity {
     @Id
     private String id;

@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@Document(collection = "rm_user")
+@Document(collection = "mr_user")
 public class UserEntity {
     @Id
     private String id;
