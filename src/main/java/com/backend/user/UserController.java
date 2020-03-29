@@ -1,10 +1,14 @@
 package com.backend.user;
 
+import com.backend.image.ImageEntity;
+import com.backend.image.ImageRepository;
 import com.backend.security.*;
+import org.bson.BsonBinarySubType;
+import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,12 +17,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import java.security.NoSuchAlgorithmException;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -26,6 +33,9 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -68,20 +78,19 @@ public class UserController {
     }
 
     @PostMapping("/upload")
-    public String uploadToLocalFileSystem(@RequestParam("file") MultipartFile upload) throws IOException {
-        MultipartFile multipartFile = upload;
-        String fileName = multipartFile.getOriginalFilename();
-        File file = new File(this.getFolderUpload(), fileName);
-        multipartFile.transferTo(file);
-        return "Success";
+    public ImageEntity uploadImg(@RequestParam("file") MultipartFile upload) throws IOException {
+        ImageEntity result = imageRepository.insert(
+                new ImageEntity(
+                    new Binary(BsonBinarySubType.BINARY, upload.getBytes())
+                ));
+        return result;
     }
 
-    public File getFolderUpload() {
-        File folderUpload = new File(System.getProperty("user.home") + "/Uploads");
-        if (!folderUpload.exists()) {
-            folderUpload.mkdirs();
-        }
-        return folderUpload;
-    }
 
+    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] downloadImg(@PathVariable String id) throws IOException {
+        Optional<ImageEntity> existed = imageRepository.findById(id);
+        byte[] imgBytes = existed.get().getData().getData();
+        return imgBytes;
+    }
 }

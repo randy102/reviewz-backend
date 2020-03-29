@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,6 +18,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -66,7 +72,10 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String method = request.getMethod();
-        String url = request.getRequestURI();
-        return constants.NO_AUTH_ROUTE.get(method).contains(url);
+
+        Stream<String> routes = constants.NO_AUTH_ROUTE.get(method).stream();
+
+        return routes
+                .anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));
     }
 }

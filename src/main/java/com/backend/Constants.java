@@ -26,7 +26,7 @@ public class Constants {
 
         // Add Route below ... =>
 
-        GET.add("/files/download/Untitled.png");
+        GET.add("/api/user/image/**");
 
         POST.add("/api/user/login");
         POST.add("/api/user/upload");
