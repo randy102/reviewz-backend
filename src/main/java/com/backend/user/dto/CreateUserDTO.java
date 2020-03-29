@@ -1,4 +1,4 @@
-package com.backend.user;
+package com.backend.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserDto {
+public class CreateUserDTO {
     private String username;
     private String password;
     private String img;

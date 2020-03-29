@@ -1,29 +1,23 @@
 package com.backend.user;
-
 import com.backend.image.ImageEntity;
 import com.backend.image.ImageRepository;
 import com.backend.security.*;
+
+import com.backend.user.dto.CreateUserDTO;
+import com.backend.user.dto.LoginDTO;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-
 import org.springframework.security.core.userdetails.UserDetails;
-
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import java.security.NoSuchAlgorithmException;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -65,7 +59,7 @@ public class UserController {
     }
 
     @PutMapping("/register")
-    public UserEntity createUser(@RequestBody CreateUserDto user) throws NoSuchAlgorithmException {
+    public UserEntity createUser(@RequestBody CreateUserDTO user) throws NoSuchAlgorithmException {
         String hashedPassword = HashService.hash(user.getPassword());
         Set<RoleEntity> roles = new HashSet<>();
 
@@ -78,12 +72,10 @@ public class UserController {
     }
 
     @PostMapping("/upload")
-    public ImageEntity uploadImg(@RequestParam("file") MultipartFile upload) throws IOException {
-        ImageEntity result = imageRepository.insert(
-                new ImageEntity(
-                    new Binary(BsonBinarySubType.BINARY, upload.getBytes())
-                ));
-        return result;
+    public String uploadImg(@RequestParam("file") MultipartFile upload) throws IOException {
+        Binary imgBinary = new Binary(BsonBinarySubType.BINARY, upload.getBytes());
+        ImageEntity result = imageRepository.insert(new ImageEntity(imgBinary));
+        return result.getId();
     }
 
 
