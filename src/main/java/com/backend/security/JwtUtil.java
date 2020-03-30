@@ -1,5 +1,6 @@
 package com.backend.security;
 
+import com.backend.user.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -15,10 +16,11 @@ import java.util.Map;
 public class JwtUtil {
     private String JWT_SECRET = "secret";
 
-    public String sign(UserDetails user){
+    public String sign(UserEntity user){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("name","name");
-        claims.put("age",20);
+        claims.put("name", user.getUsername());
+        claims.put("roles", user.getRoles());
+        claims.put("id", user.getId());
 
         return Jwts.builder()
                 .setClaims(claims)

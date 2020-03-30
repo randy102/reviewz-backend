@@ -53,9 +53,7 @@ public class UserController {
         if (!existedUser.getPassword().equals(hashedPassword))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Incorrect Password");
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(input.getUsername());
-
-        return jwtUtil.sign(userDetails);
+        return jwtUtil.sign(existedUser);
     }
 
     @PutMapping("/register")
