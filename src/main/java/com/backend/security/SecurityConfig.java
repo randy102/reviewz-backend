@@ -30,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().disable() //Turn off CSRF
+            .cors().and().csrf().disable() //Turn off CSRF nad CORS
             //.authorizeRequests()
             //.anyRequest().authenticated()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
