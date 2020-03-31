@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -27,9 +28,6 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private ImageRepository imageRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -69,18 +67,4 @@ public class UserController {
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, user.getImg()));
     }
 
-    @PostMapping("/upload")
-    public String uploadImg(@RequestParam("file") MultipartFile upload) throws IOException {
-        Binary imgBinary = new Binary(BsonBinarySubType.BINARY, upload.getBytes());
-        ImageEntity result = imageRepository.insert(new ImageEntity(imgBinary));
-        return result.getId();
-    }
-
-
-    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] downloadImg(@PathVariable String id) throws IOException {
-        Optional<ImageEntity> existed = imageRepository.findById(id);
-        byte[] imgBytes = existed.get().getData().getData();
-        return imgBytes;
-    }
 }
