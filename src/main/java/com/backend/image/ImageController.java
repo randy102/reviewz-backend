@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 @RestController
@@ -33,6 +35,14 @@ public class ImageController {
     @PutMapping("/")
     public String uploadImg(@RequestParam("file") MultipartFile upload) throws IOException {
         Binary imgBinary = new Binary(BsonBinarySubType.BINARY, upload.getBytes());
+        ImageEntity result = imageRepository.insert(new ImageEntity(imgBinary));
+        return result.getId();
+    }
+
+    @PutMapping("/test")
+    public String uploadImgTest(@RequestParam("file") File upload) throws IOException {
+        byte[] imgByte = Files.readAllBytes(upload.toPath());
+        Binary imgBinary = new Binary(BsonBinarySubType.BINARY, imgByte);
         ImageEntity result = imageRepository.insert(new ImageEntity(imgBinary));
         return result.getId();
     }
