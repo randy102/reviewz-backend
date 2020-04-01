@@ -39,7 +39,7 @@ public class ImageController {
         return result.getId();
     }
 
-    @PutMapping("/test")
+    @PutMapping(value = "/test")
     public String uploadImgTest(@RequestParam("file") File upload) throws IOException {
         byte[] imgByte = Files.readAllBytes(upload.toPath());
         Binary imgBinary = new Binary(BsonBinarySubType.BINARY, imgByte);
