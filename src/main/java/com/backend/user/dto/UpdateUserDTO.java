@@ -10,10 +10,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserDTO {
+public class UpdateUserDTO {
     private String username;
     private String password;
-
+    private String img;
     @JsonProperty
     private boolean isAdmin;
 }
