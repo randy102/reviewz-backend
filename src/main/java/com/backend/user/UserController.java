@@ -58,13 +58,18 @@ public class UserController {
     public UserEntity createUser(@RequestBody CreateUserDTO user) throws NoSuchAlgorithmException {
         String hashedPassword = HashService.hash(user.getPassword());
         Set<RoleEntity> roles = new HashSet<>();
+        UserEntity existeduser = userRepository.findByUsername(user.getUsername());
+        if(existeduser!=null){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The registered name is duplicated");
+        }
 
-        roles.add(new RoleEntity(RoleEnum.ROLE_USER.toString()));
-
-        if (user.isAdmin())
-            roles.add(new RoleEntity(RoleEnum.ROLE_ADMIN.toString()));
+        if (user.isAdmin()) {
+            if (RoleEnum.ROLE_ADMIN.equals(this)) {
+                roles.add(new RoleEntity(RoleEnum.ROLE_ADMIN.toString()));
+            } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Non-administrative users");
+        }
+        else roles.add(new RoleEntity(RoleEnum.ROLE_USER.toString()));
 
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, user.getImg()));
     }
-
 }
