@@ -26,12 +26,10 @@ public class UserService {
 
     public String login(LoginDTO input) throws NoSuchAlgorithmException {
         UserEntity existedUser = userRepository.findByUsername(input.getUsername());
-
         if (existedUser == null)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not found: User");
 
         String hashedPassword = HashService.hash(input.getPassword());
-
         if (!existedUser.getPassword().equals(hashedPassword))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Incorrect Password");
 
@@ -43,10 +41,8 @@ public class UserService {
         Set<RoleEntity> roles = new HashSet<>();
         UserEntity existedUser = userRepository.findByUsername(user.getUsername());
 
-        if(existedUser != null){
+        if(existedUser != null)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The username has existed");
-        }
-
         roles.add(new RoleEntity(RoleEnum.ROLE_USER.toString()));
 
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, ""));

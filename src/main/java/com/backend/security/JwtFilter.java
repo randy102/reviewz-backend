@@ -1,9 +1,8 @@
 package com.backend.security;
 
-import com.backend.Constants;
+import com.backend.RouteConfig;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,17 +10,12 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @Component
@@ -30,7 +24,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private Constants constants;
+    private RouteConfig routeConfig;
 
     @Autowired
     private MyUserDetailsService userDetailsService;
@@ -73,7 +67,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String method = request.getMethod();
 
-        Stream<String> routes = constants.NO_AUTH_ROUTE.get(method).stream();
+        Stream<String> routes = routeConfig.NO_AUTH_ROUTE.get(method).stream();
 
         return routes
                 .anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));

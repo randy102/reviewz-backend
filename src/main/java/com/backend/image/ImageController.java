@@ -1,50 +1,29 @@
 package com.backend.image;
 
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
+import com.backend.RouteConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/image")
+@RequestMapping(value = RouteConfig.IMAGE_BASE)
 public class ImageController {
 
-    @Autowired
-    private ImageRepository imageRepository;
+   @Autowired
+   private ImageService imageService;
 
     @GetMapping(value = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody
-    byte[] downloadImg(@PathVariable String id) throws IOException {
-        Optional<ImageEntity> existed = imageRepository.findById(id);
-
-        if(!existed.isPresent())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not found: Image");
-
-        return existed.get().getData().getData();
+    @ResponseBody
+    public byte[] downloadImg(@PathVariable String id) {
+        return imageService.getImage(id);
     }
 
     @PutMapping("/")
     public String uploadImg(@RequestParam("file") MultipartFile upload) throws IOException {
-        Binary imgBinary = new Binary(BsonBinarySubType.BINARY, upload.getBytes());
-        ImageEntity result = imageRepository.insert(new ImageEntity(imgBinary));
-        return result.getId();
-    }
-
-    @PutMapping(value = "/test")
-    public String uploadImgTest(@RequestParam("file") File upload) throws IOException {
-        byte[] imgByte = Files.readAllBytes(upload.toPath());
-        Binary imgBinary = new Binary(BsonBinarySubType.BINARY, imgByte);
-        ImageEntity result = imageRepository.insert(new ImageEntity(imgBinary));
-        return result.getId();
+       return imageService.saveImage(upload);
     }
 
 }
