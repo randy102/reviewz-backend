@@ -21,7 +21,7 @@ public class ImageController {
         return imageService.getImage(id);
     }
 
-    @PutMapping("/")
+    @PostMapping("/")
     public String uploadImg(@RequestParam("file") MultipartFile upload) throws IOException {
        return imageService.saveImage(upload);
     }

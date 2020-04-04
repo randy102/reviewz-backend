@@ -19,7 +19,7 @@ public class UserController {
         return userService.login(input);
     }
 
-    @PutMapping("/register")
+    @PostMapping("/register")
     public UserEntity createUser(@RequestBody RegisterDTO user) throws Exception {
         return userService.register(user);
     }

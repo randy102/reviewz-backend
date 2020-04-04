@@ -22,6 +22,10 @@ public class ImageService {
         return existed.get().getData().getData();
     }
 
+    /**
+     * @param upload Multipart file
+     * @return Image's id
+     */
     public String saveImage(MultipartFile upload)throws IOException {
 
         // TODO: Check file upload must be type png or jpg...
