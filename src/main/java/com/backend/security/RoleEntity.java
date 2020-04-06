@@ -13,6 +13,10 @@ import org.springframework.security.core.GrantedAuthority;
 public class RoleEntity implements GrantedAuthority {
     private String role;
 
+    public RoleEntity(RoleEnum roleEnum){
+        this.role = roleEnum.value;
+    }
+
     @Override
     public String getAuthority() {
         return role;

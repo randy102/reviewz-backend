@@ -19,7 +19,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByUsername(userName);
-        if(userEntity == null) throw new UsernameNotFoundException("Not found: User");
+        if(userEntity == null) throw new UsernameNotFoundException("Token invalid! Not found: User");
 
         CustomUser customUser = new CustomUser(userEntity.getUsername(),userEntity.getPassword(),userEntity.getRoles());
         customUser.setId(userEntity.getId());

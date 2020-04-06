@@ -4,14 +4,17 @@ import com.backend.security.*;
 import com.backend.user.dto.CreateUserDTO;
 import com.backend.user.dto.LoginDTO;
 import com.backend.user.dto.RegisterDTO;
+import com.backend.user.dto.UpdateUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -36,15 +39,99 @@ public class UserService {
         return jwtUtil.sign(existedUser);
     }
 
+
     public UserEntity register(RegisterDTO user) throws Exception {
         String hashedPassword = HashService.hash(user.getPassword());
         Set<RoleEntity> roles = new HashSet<>();
         UserEntity existedUser = userRepository.findByUsername(user.getUsername());
 
-        if(existedUser != null)
+        if (existedUser != null)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The username has existed");
-        roles.add(new RoleEntity(RoleEnum.ROLE_USER.toString()));
+        roles.add(new RoleEntity(RoleEnum.ROLE_USER));
 
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, ""));
+    }
+
+
+    /**
+     * @forAdmin to reset password, change user's role
+     * @forUser to change img, username
+     * @return UserEntity
+     */
+    public UserEntity updateUser(String id, UpdateUserDTO input) throws NoSuchAlgorithmException {
+        UserEntity existedUser = userRepository.findById(id).orElse(null);
+        boolean currentUserIsAdmin = currentUser.getInfo().hasRole(RoleEnum.ROLE_ADMIN);
+
+        if (existedUser == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not found: User");
+
+        //Return true if existed user is Admin
+        boolean hasRoleAdmin = existedUser.getRoles().stream().anyMatch(roleEntity -> roleEntity.getAuthority().equals(RoleEnum.ROLE_ADMIN.toString()));
+
+        // If role changed (adding or remove ROLE_ADMIN)
+        if (input.isAdmin() != hasRoleAdmin) {
+            // Must be admin to proceed
+            if (!currentUserIsAdmin)
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not have permission");
+
+            if (!input.isAdmin()) { // If remove ROLE_ADMIN
+                Set<RoleEntity> modifiedRoles = existedUser.getRoles().stream()
+                        .filter(roleEntity -> !roleEntity.getAuthority().equals(RoleEnum.ROLE_ADMIN.value))
+                        .collect(Collectors.toSet());
+                existedUser.setRoles(modifiedRoles);
+            } else { // If add ROLE_ADMIN
+                Set<RoleEntity> modifiedRoles = existedUser.getRoles();
+                modifiedRoles.add(new RoleEntity(RoleEnum.ROLE_ADMIN));
+                existedUser.setRoles(modifiedRoles);
+            }
+        }
+
+        // If reset password
+        if(!input.getPassword().isEmpty()){
+            // Must be admin to proceed
+            if(!currentUserIsAdmin)
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not have permission");
+
+            existedUser.setPassword(HashService.hash(input.getPassword()));
+        }
+
+        // If username changed
+        if(!input.getUsername().isEmpty()){
+            // Check existed username
+            UserEntity existedUsername = userRepository.findByUsername(input.getUsername());
+            if(existedUsername != null)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username has existed!");
+
+            existedUser.setUsername(input.getUsername());
+        }
+
+
+        if(!input.getImg().isEmpty())
+            existedUser.setImg(input.getImg());
+
+        return userRepository.save(existedUser);
+    }
+
+
+    @Secured("ROLE_ADMIN")
+    public UserEntity createUser(CreateUserDTO input){
+        Set<RoleEntity> roles = new HashSet<>();
+        roles.add(new RoleEntity(RoleEnum.ROLE_USER));
+        if(input.isAdmin())
+            roles.add(new RoleEntity(RoleEnum.ROLE_ADMIN));
+
+        // If username has existed
+        UserEntity existedUsername = userRepository.findByUsername(input.getUsername());
+        if(existedUsername != null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username has existed!");
+
+        UserEntity userToCreate = new UserEntity(
+                input.getUsername(),
+                input.getPassword(),
+                roles,
+                ""
+        );
+
+        return userRepository.save(userToCreate);
     }
 }

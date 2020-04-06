@@ -30,7 +30,7 @@ public class RouteConfig {
         POST.add("/api/user/login");
         POST.add("/api/user/upload");
 
-        PUT.add("/api/user/register");
+        POST.add("/api/user/register");
     }
 
     // URL Base ...
