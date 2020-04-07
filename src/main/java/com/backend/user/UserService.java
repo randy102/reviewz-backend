@@ -31,7 +31,7 @@ public class UserService {
     public String login(LoginDTO input) throws NoSuchAlgorithmException {
         UserEntity existedUser = userRepository.findByUsername(input.getUsername());
         if (existedUser == null)
-            throw Error.DuplicatedError("User");
+            throw Error.NotFoundError("User");
 
         String hashedPassword = HashService.hash(input.getPassword());
         if (!existedUser.getPassword().equals(hashedPassword))
