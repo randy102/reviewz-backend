@@ -1,5 +1,6 @@
 package com.backend.user;
 
+import com.backend.Error;
 import com.backend.security.*;
 import com.backend.user.dto.CreateUserDTO;
 import com.backend.user.dto.LoginDTO;
@@ -30,11 +31,11 @@ public class UserService {
     public String login(LoginDTO input) throws NoSuchAlgorithmException {
         UserEntity existedUser = userRepository.findByUsername(input.getUsername());
         if (existedUser == null)
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not found: User");
+            throw Error.DuplicatedError("User");
 
         String hashedPassword = HashService.hash(input.getPassword());
         if (!existedUser.getPassword().equals(hashedPassword))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Incorrect Password");
+            throw Error.FormError("Password");
 
         return jwtUtil.sign(existedUser);
     }
@@ -46,7 +47,7 @@ public class UserService {
         UserEntity existedUser = userRepository.findByUsername(user.getUsername());
 
         if (existedUser != null)
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The username has existed");
+            throw Error.DuplicatedError("User");
         roles.add(new RoleEntity(RoleEnum.ROLE_USER));
 
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, ""));
@@ -63,7 +64,7 @@ public class UserService {
         boolean currentUserIsAdmin = currentUser.getInfo().hasRole(RoleEnum.ROLE_ADMIN);
 
         if (existedUser == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not found: User");
+            throw Error.NotFoundError("User");
 
         //Return true if existed user is Admin
         boolean hasRoleAdmin = existedUser.getRoles().stream().anyMatch(roleEntity -> roleEntity.getAuthority().equals(RoleEnum.ROLE_ADMIN.toString()));
@@ -72,7 +73,7 @@ public class UserService {
         if (input.isAdmin() != hasRoleAdmin) {
             // Must be admin to proceed
             if (!currentUserIsAdmin)
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not have permission");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission");
 
             if (!input.isAdmin()) { // If remove ROLE_ADMIN
                 Set<RoleEntity> modifiedRoles = existedUser.getRoles().stream()
@@ -90,7 +91,7 @@ public class UserService {
         if(!input.getPassword().isEmpty()){
             // Must be admin to proceed
             if(!currentUserIsAdmin)
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not have permission");
+                throw Error.NoPermissionError();
 
             existedUser.setPassword(HashService.hash(input.getPassword()));
         }
@@ -100,7 +101,7 @@ public class UserService {
             // Check existed username
             UserEntity existedUsername = userRepository.findByUsername(input.getUsername());
             if(existedUsername != null)
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username has existed!");
+                throw Error.DuplicatedError("User");
 
             existedUser.setUsername(input.getUsername());
         }
@@ -123,8 +124,7 @@ public class UserService {
         // If username has existed
         UserEntity existedUsername = userRepository.findByUsername(input.getUsername());
         if(existedUsername != null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username has existed!");
-
+            throw Error.DuplicatedError("User");
         UserEntity userToCreate = new UserEntity(
                 input.getUsername(),
                 input.getPassword(),
