@@ -10,12 +10,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -28,6 +33,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private MyUserDetailsService userDetailsService;
+
+    @Autowired
+    public RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Override
     protected void doFilterInternal(
@@ -69,7 +77,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         Stream<String> routes = routeConfig.NO_AUTH_ROUTE.get(method).stream();
 
-        return routes
-                .anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));
+        Set<List<String>> matchedRoute = requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
+                .map(t -> t.getPatternsCondition().getMatchingPatterns(request.getServletPath()))
+                .collect(Collectors.toSet());
+
+        boolean inNoAuthRoute = routes.anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));
+        boolean inDefinedRoute = matchedRoute.size() > 1;
+        boolean notApi = request.getRequestURI().matches("^(?!/?api).+$");
+        return inNoAuthRoute || notApi;
     }
 }

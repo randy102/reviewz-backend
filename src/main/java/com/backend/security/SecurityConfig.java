@@ -31,8 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .cors().and().csrf().disable() //Turn off CSRF nad CORS
-            //.authorizeRequests()
-            //.anyRequest().authenticated()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
