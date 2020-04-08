@@ -149,6 +149,7 @@ public class UserService {
         UserEntity existedUsername = userRepository.findByUsername(input.getUsername());
         if(existedUsername != null)
             throw Error.DuplicatedError("User");
+
         UserEntity userToCreate = new UserEntity(
                 input.getUsername(),
                 input.getPassword(),
