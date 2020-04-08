@@ -2,10 +2,7 @@ package com.backend.user;
 
 import com.backend.Error;
 import com.backend.security.*;
-import com.backend.user.dto.CreateUserDTO;
-import com.backend.user.dto.LoginDTO;
-import com.backend.user.dto.RegisterDTO;
-import com.backend.user.dto.UpdateUserDTO;
+import com.backend.user.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -158,6 +155,21 @@ public class UserService {
         );
 
         return userRepository.save(userToCreate);
+    }
 
+    public UserEntity changePassword(String id, ChangePasswordDTO input) throws NoSuchAlgorithmException {
+        UserEntity existed = userRepository.findById(id).orElse(null);
+        String hashedOldPassword = HashService.hash(input.getOldPassword());
+        String hashedNewPassword = HashService.hash(input.getNewPassword());
+
+        if(existed == null)
+            throw Error.NotFoundError("User");
+
+        if(!existed.getPassword().equals(hashedOldPassword))
+            throw Error.FormError("Password");
+
+        existed.setPassword(hashedNewPassword);
+
+        return userRepository.save(existed);
     }
 }
