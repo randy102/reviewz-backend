@@ -24,13 +24,12 @@ public class RouteConfig {
         Set<String> DELETE = NO_AUTH_ROUTE.get("DELETE");
 
         // Add Route below ... =>
-
-        GET.add("/api/user/image/**");
+        GET.add("/api/image/**");
 
         POST.add("/api/user/login");
         POST.add("/api/user/upload");
 
-        PUT.add("/api/user/register");
+        POST.add("/api/user/register");
     }
 
     // URL Base ...

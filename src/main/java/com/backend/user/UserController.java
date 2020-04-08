@@ -1,13 +1,16 @@
 package com.backend.user;
 import com.backend.RouteConfig;
 
+import com.backend.user.dto.CreateUserDTO;
 import com.backend.user.dto.LoginDTO;
 import com.backend.user.dto.RegisterDTO;
+import com.backend.user.dto.UpdateUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.security.NoSuchAlgorithmException;
 
 
 @RestController
@@ -27,6 +30,7 @@ public class UserController {
         return userService.register(user);
     }
 
+
     @GetMapping("/")
     public List<UserEntity> AllUser() throws ArrayIndexOutOfBoundsException{
         return userService.getAllUser();
@@ -39,6 +43,17 @@ public class UserController {
     @GetMapping("/detail/{id}")
     public Optional<UserEntity> detailUser(@PathVariable("id") String id) throws Exception{
         return userService.detailUser(id);
+    }
+
+
+    @PutMapping("/{id}")
+    public UserEntity updateUser(@PathVariable("id") String id, @RequestBody() UpdateUserDTO input) throws NoSuchAlgorithmException {
+        return userService.updateUser(id, input);
+    }
+
+    @PostMapping()
+    public UserEntity createUser(@RequestBody() CreateUserDTO input){
+        return userService.createUser(input);
     }
 
 }
