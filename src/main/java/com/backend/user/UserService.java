@@ -1,7 +1,6 @@
 package com.backend.user;
 
 import com.backend.security.*;
-import com.backend.user.dto.CreateUserDTO;
 import com.backend.user.dto.LoginDTO;
 import com.backend.user.dto.RegisterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -24,7 +25,7 @@ public class UserService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    public String login(LoginDTO input) throws NoSuchAlgorithmException {
+    public String login(LoginDTO input) throws NoSuchAlgorithmException{
         UserEntity existedUser = userRepository.findByUsername(input.getUsername());
         if (existedUser == null)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not found: User");
@@ -46,5 +47,28 @@ public class UserService {
         roles.add(new RoleEntity(RoleEnum.ROLE_USER.toString()));
 
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, ""));
+    }
+
+    public List<UserEntity> getAllUser() throws ArrayStoreException{
+        return userRepository.findAll();
+    }
+
+    public Optional<UserEntity> deleteUser(String id) throws Exception{
+        Optional<UserEntity> user = userRepository.findById(id);
+
+        if(user.isPresent()){
+            userRepository.deleteById(id);
+            return user;
+        }
+        else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
+    }
+
+    public Optional<UserEntity> detailUser(String id) throws Exception{
+        Optional<UserEntity> user = userRepository.findById(id);
+
+        if(user.isPresent()){
+            return user;
+        }
+        else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
     }
 }
