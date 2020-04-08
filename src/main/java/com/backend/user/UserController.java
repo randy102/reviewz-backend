@@ -18,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     // 4.1
-    @GetMapping("/")
+    @GetMapping()
     public List<UserEntity> AllUser() throws ArrayIndexOutOfBoundsException {
         return userService.getAllUser();
     }
