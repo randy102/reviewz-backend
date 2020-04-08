@@ -2,6 +2,7 @@ package com.backend.user;
 
 import com.backend.Error;
 import com.backend.security.*;
+import com.backend.user.dto.CreateUserDTO;
 import com.backend.user.dto.LoginDTO;
 import com.backend.user.dto.RegisterDTO;
 import com.backend.user.dto.UpdateUserDTO;
@@ -69,14 +70,13 @@ public class UserService {
         else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
     }
 
-    public Optional<UserEntity> detailUser(String id) throws Exception{
+    public Optional<UserEntity> detailUser(String id) throws Exception {
         Optional<UserEntity> user = userRepository.findById(id);
 
-        if(user.isPresent()){
+        if (user.isPresent()) {
             return user;
-        }
-        else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
-
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
+    }
 
     /**
      * @forAdmin to reset password, change user's role
