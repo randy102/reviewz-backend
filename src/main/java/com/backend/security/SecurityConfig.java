@@ -30,7 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .cors().and().csrf().disable() //Turn off CSRF nad CORS
+            .cors().and()// .disable()
+            .csrf().disable() //Turn off CSRF nad CORS
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
@@ -40,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final CorsConfiguration configuration = new CorsConfiguration();
 
         // configuration.setAllowedOrigins(ImmutableList.of("https://www.yourdomain.com")); // www - obligatory
-        configuration.setAllowedOrigins(ImmutableList.of("*"));  //set access from all domains
+        configuration.setAllowedOrigins(ImmutableList.of("http://www.mydomain.com"));  //set access from all domains
         configuration.setAllowedMethods(ImmutableList.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"));
