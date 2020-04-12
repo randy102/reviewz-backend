@@ -80,7 +80,7 @@ public class JwtFilter extends OncePerRequestFilter {
         Stream<String> noAuthRoutes = routeConfig.NO_AUTH_ROUTE.get(method).stream();
 
         String clientHost = request.getServerName();
-        if(!clientHost.equals("review-movie-project.herokuapp.com"))
+        if(!clientHost.equals("movie-project.herokuapp.com"))
             throw new ServletException("Domain denied!");
 
         System.out.println("Host: " + request.getServerName());
