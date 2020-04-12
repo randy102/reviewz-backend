@@ -46,6 +46,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String token = request.getHeader("Authorization");
 
+
+
         if (token == null)
             throw new ServletException("Not found: Token!");
 
@@ -75,14 +77,13 @@ public class JwtFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String method = request.getMethod();
 
-        Stream<String> routes = routeConfig.NO_AUTH_ROUTE.get(method).stream();
+        Stream<String> noAuthRoutes = routeConfig.NO_AUTH_ROUTE.get(method).stream();
 
-        Set<List<String>> matchedRoute = requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
-                .map(t -> t.getPatternsCondition().getMatchingPatterns(request.getServletPath()))
-                .collect(Collectors.toSet());
+        System.out.println(request.getHeader("Host"));
+        System.out.println(request.getServerName());
 
-        boolean inNoAuthRoute = routes.anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));
-        boolean inDefinedRoute = matchedRoute.size() > 1;
+        boolean inNoAuthRoute = noAuthRoutes.anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));
+
         boolean notApi = request.getRequestURI().matches("^(?!/?api).+$");
         return inNoAuthRoute || notApi;
     }
