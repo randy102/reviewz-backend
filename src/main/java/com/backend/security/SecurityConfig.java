@@ -40,7 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
 
-        // configuration.setAllowedOrigins(ImmutableList.of("https://www.yourdomain.com")); // www - obligatory
+        // For Production
+        // configuration.setAllowedOrigins(ImmutableList.of("https://www.review-movie-project.herokuapp.com"));
         configuration.setAllowedOrigins(ImmutableList.of("*"));  //set access from all domains
         configuration.setAllowedMethods(ImmutableList.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowCredentials(true);

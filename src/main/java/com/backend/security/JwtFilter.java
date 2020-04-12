@@ -76,18 +76,15 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String method = request.getMethod();
-
         Stream<String> noAuthRoutes = routeConfig.NO_AUTH_ROUTE.get(method).stream();
-
-        String clientHost = request.getServerName();
-        if(!clientHost.equals("movie-project.herokuapp.com"))
-            throw new ServletException("Domain denied!");
-
-        System.out.println("Host: " + request.getServerName());
-
         boolean inNoAuthRoute = noAuthRoutes.anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));
 
-        boolean notApi = request.getRequestURI().matches("^(?!/?api).+$");
-        return inNoAuthRoute || notApi;
+        String clientHost = request.getServerName();
+        boolean notAllowedDomain = !clientHost.equals("review-movie-project.herokuapp.com");
+        // if(notAllowedDomain)
+        //    throw new ServletException("Domain denied!");
+
+        // boolean notApi = request.getRequestURI().matches("^(?!/?api).+$");
+        return inNoAuthRoute;
     }
 }
