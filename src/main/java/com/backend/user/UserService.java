@@ -1,9 +1,13 @@
 package com.backend.user;
 
 import com.backend.Error;
+import com.backend.image.ImageEntity;
+import com.backend.image.ImageRepository;
 import com.backend.security.*;
 import com.backend.user.dto.*;
+import org.checkerframework.checker.units.qual.Acceleration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -26,6 +30,9 @@ public class UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     public String login(LoginDTO input) throws NoSuchAlgorithmException{
         UserEntity existedUser = userRepository.findByUsername(input.getUsername());
@@ -57,24 +64,37 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<UserEntity> deleteUser(String id) throws Exception{
-        Optional<UserEntity> user = userRepository.findById(id);
+    public UserEntity deleteUser(String id) throws Exception{
+        UserEntity user = userRepository.findById(id).orElse(null);
 
-        if(user.isPresent()){
-            userRepository.deleteById(id);
-            return user;
+        if(user == null){
+            throw Error.NotFoundError("User");
         }
-        else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
+
+        userRepository.deleteById(id);
+        return user;
     }
 
-    public Optional<UserEntity> detailUser(String id) throws Exception {
-        Optional<UserEntity> user = userRepository.findById(id);
+    public UserEntity detailUser(String id) throws Exception {
+        UserEntity user = userRepository.findById(id).orElse(null);
 
-        if (user.isPresent()) {
-            return user;
-        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
+        if (user == null) {
+            throw Error.NotFoundError("User");
+        }
+
+        return user;
     }
 
+    public ImageEntity deleteImage(String id) throws Exception{
+        ImageEntity img = imageRepository.findById(id).orElse(null);
+
+        if (img == null){
+            throw Error.NotFoundError("images");
+        }
+
+        imageRepository.deleteById(id);
+        return img;
+    }
     /**
      * @forAdmin to reset password, change user's role
      * @forUser to change img, username

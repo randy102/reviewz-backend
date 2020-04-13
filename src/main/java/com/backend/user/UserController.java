@@ -1,6 +1,7 @@
 package com.backend.user;
 import com.backend.RouteConfig;
 
+import com.backend.image.ImageEntity;
 import com.backend.user.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class UserController {
 
     // 4.5
     @DeleteMapping("/{id}")
-    public Optional<UserEntity> deleteUser(@PathVariable("id") String id) throws Exception {
+    public UserEntity deleteUser(@PathVariable("id") String id) throws Exception {
         return userService.deleteUser(id);
     }
 
@@ -55,7 +56,7 @@ public class UserController {
 
     // 4.9
     @GetMapping("/detail/{id}")
-    public Optional<UserEntity> detailUser(@PathVariable("id") String id) throws Exception {
+    public UserEntity detailUser(@PathVariable("id") String id) throws Exception {
         return userService.detailUser(id);
     }
 
@@ -63,5 +64,11 @@ public class UserController {
     @PutMapping("/password/{id}")
     public UserEntity changePassword(@PathVariable("id") String id, @RequestBody ChangePasswordDTO input) throws NoSuchAlgorithmException {
         return userService.changePassword(id, input);
+    }
+
+    //6.3
+    @DeleteMapping("/image/{id}")
+    public ImageEntity deleteImage(@PathVariable("id") String id) throws Exception{
+        return userService.deleteImage(id);
     }
 }
