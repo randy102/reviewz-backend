@@ -16,9 +16,11 @@ public class JwtUtil {
 
     public String sign(UserEntity user){
         Map<String, Object> claims = new HashMap<>();
+
         claims.put("name", user.getUsername());
         claims.put("roles", user.getRoles());
         claims.put("id", user.getId());
+        claims.put("img", user.getImg());
 
         return Jwts.builder()
                 .setClaims(claims)
