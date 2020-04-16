@@ -27,4 +27,10 @@ public class ImageController {
        return imageService.saveImage(upload);
     }
 
+    //6.3
+    @DeleteMapping("/{id}")
+    public ImageEntity deleteImage(@PathVariable("id") String id) throws Exception{
+        return imageService.deleteImage(id);
+    }
+
 }

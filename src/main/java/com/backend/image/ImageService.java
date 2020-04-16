@@ -1,5 +1,6 @@
 package com.backend.image;
 
+import com.backend.Error;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,15 @@ public class ImageService {
         return result.getId();
     }
 
+    public ImageEntity deleteImage(String id) throws Exception{
+        ImageEntity img = imageRepository.findById(id).orElse(null);
+
+        if (img == null){
+            throw Error.NotFoundError("images");
+        }
+
+        imageRepository.deleteById(id);
+        return img;
+    }
 }
 

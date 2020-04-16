@@ -66,9 +66,5 @@ public class UserController {
         return userService.changePassword(id, input);
     }
 
-    //6.3
-    @DeleteMapping("/image/{id}")
-    public ImageEntity deleteImage(@PathVariable("id") String id) throws Exception{
-        return userService.deleteImage(id);
-    }
+
 }

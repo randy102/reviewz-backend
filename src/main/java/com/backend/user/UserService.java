@@ -85,16 +85,6 @@ public class UserService {
         return user;
     }
 
-    public ImageEntity deleteImage(String id) throws Exception{
-        ImageEntity img = imageRepository.findById(id).orElse(null);
-
-        if (img == null){
-            throw Error.NotFoundError("images");
-        }
-
-        imageRepository.deleteById(id);
-        return img;
-    }
     /**
      * @forAdmin to reset password, change user's role
      * @forUser to change img, username
