@@ -146,7 +146,7 @@ public class UserService {
 
 
     @Secured("ROLE_ADMIN")
-    public UserEntity createUser(CreateUserDTO input){
+    public UserEntity createUser(CreateUserDTO input) throws NoSuchAlgorithmException {
         Set<RoleEntity> roles = new HashSet<>();
         roles.add(new RoleEntity(RoleEnum.ROLE_USER));
         if(input.isAdmin())
@@ -159,7 +159,7 @@ public class UserService {
 
         UserEntity userToCreate = new UserEntity(
                 input.getUsername(),
-                input.getPassword(),
+                HashService.hash(input.getPassword()),
                 roles,
                 ""
         );
