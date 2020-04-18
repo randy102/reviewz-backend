@@ -113,13 +113,8 @@ public class UserService {
         }
 
         // If reset password
-        if(input.getPassword() != null){
-            // Must be admin to proceed
-            if(!currentUserIsAdmin)
-                throw Error.NoPermissionError();
-
+        if(input.getPassword() != null)
             existedUser.setPassword(HashService.hash(input.getPassword()));
-        }
 
         // If username changed
         if(input.getUsername() != null){
