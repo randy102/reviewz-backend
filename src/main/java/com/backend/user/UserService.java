@@ -90,7 +90,7 @@ public class UserService {
      * @forUser to change img, username
      * @return UserEntity
      */
-    public UserEntity updateUser(String id, UpdateUserDTO input) throws NoSuchAlgorithmException {
+    public String updateUser(String id, UpdateUserDTO input) throws NoSuchAlgorithmException {
         UserEntity existedUser = userRepository.findById(id).orElse(null);
         boolean currentUserIsAdmin = currentUser.getInfo().hasRole(RoleEnum.ROLE_ADMIN);
 
@@ -103,8 +103,8 @@ public class UserService {
         // If role changed (adding or remove ROLE_ADMIN)
         if (input.isAdmin() != hasRoleAdmin) {
             // Must be admin to proceed
-            if (!currentUserIsAdmin)
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission");
+//            if (!currentUserIsAdmin)
+//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission");
 
             if (!input.isAdmin()) { // If remove ROLE_ADMIN
                 Set<RoleEntity> modifiedRoles = existedUser.getRoles().stream()
@@ -141,7 +141,7 @@ public class UserService {
         if(!input.getImg().isEmpty())
             existedUser.setImg(input.getImg());
 
-        return userRepository.save(existedUser);
+        return jwtUtil.sign(userRepository.save(existedUser));
     }
 
 

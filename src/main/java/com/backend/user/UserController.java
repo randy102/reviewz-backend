@@ -32,7 +32,7 @@ public class UserController {
 
     // 4.3
     @PutMapping("/{id}")
-    public UserEntity updateUser(@PathVariable("id") String id, @RequestBody() UpdateUserDTO input) throws NoSuchAlgorithmException {
+    public String updateUser(@PathVariable("id") String id, @RequestBody() UpdateUserDTO input) throws NoSuchAlgorithmException {
         return userService.updateUser(id, input);
     }
 
