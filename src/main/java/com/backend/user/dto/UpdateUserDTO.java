@@ -1,10 +1,10 @@
 package com.backend.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.backend.security.RoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import javax.validation.constraints.Null;
 
 @Getter
 @AllArgsConstructor
@@ -13,6 +13,5 @@ public class UpdateUserDTO {
     private String username;
     private String password;
     private String img;
-    @JsonProperty
-    private boolean isAdmin;
+    private RoleEnum role; // ROLE_ADMIN, ROLE_USER
 }

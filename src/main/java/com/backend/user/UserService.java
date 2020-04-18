@@ -1,29 +1,28 @@
 package com.backend.user;
 
 import com.backend.Error;
-import com.backend.image.ImageEntity;
 import com.backend.image.ImageRepository;
 import com.backend.security.*;
 import com.backend.user.dto.*;
-import org.checkerframework.checker.units.qual.Acceleration;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Autowired
     private CurrentUser currentUser;
@@ -97,29 +96,24 @@ public class UserService {
         if (existedUser == null)
             throw Error.NotFoundError("User");
 
-        //Return true if existed user is Admin
-        boolean hasRoleAdmin = existedUser.getRoles().stream().anyMatch(roleEntity -> roleEntity.getAuthority().equals(RoleEnum.ROLE_ADMIN.toString()));
+        // If role changed
+        if (input.getRole() != null) {
+             // Must be admin to proceed
+            if (!currentUserIsAdmin)
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission");
 
-        // If role changed (adding or remove ROLE_ADMIN)
-        if (input.isAdmin() != hasRoleAdmin) {
-            // Must be admin to proceed
-//            if (!currentUserIsAdmin)
-//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission");
+            Set<RoleEntity> newRoles = new HashSet<>();
 
-            if (!input.isAdmin()) { // If remove ROLE_ADMIN
-                Set<RoleEntity> modifiedRoles = existedUser.getRoles().stream()
-                        .filter(roleEntity -> !roleEntity.getAuthority().equals(RoleEnum.ROLE_ADMIN.value))
-                        .collect(Collectors.toSet());
-                existedUser.setRoles(modifiedRoles);
-            } else { // If add ROLE_ADMIN
-                Set<RoleEntity> modifiedRoles = existedUser.getRoles();
-                modifiedRoles.add(new RoleEntity(RoleEnum.ROLE_ADMIN));
-                existedUser.setRoles(modifiedRoles);
-            }
+            if (input.getRole().equals(RoleEnum.ROLE_ADMIN))
+                newRoles.add(new RoleEntity(RoleEnum.ROLE_ADMIN));
+            else
+                newRoles.add(new RoleEntity(RoleEnum.ROLE_USER));
+
+            existedUser.setRoles(newRoles);
         }
 
         // If reset password
-        if(!input.getPassword().isEmpty()){
+        if(input.getPassword() != null){
             // Must be admin to proceed
             if(!currentUserIsAdmin)
                 throw Error.NoPermissionError();
@@ -128,17 +122,15 @@ public class UserService {
         }
 
         // If username changed
-        if(!input.getUsername().isEmpty()){
+        if(input.getUsername() != null){
             // Check existed username
             UserEntity existedUsername = userRepository.findByUsername(input.getUsername());
-            if(existedUsername != null)
+            if(existedUsername != null && !existedUsername.getId().equals(existedUser.getId()))
                 throw Error.DuplicatedError("User");
-
             existedUser.setUsername(input.getUsername());
         }
 
-
-        if(!input.getImg().isEmpty())
+        if(input.getImg() != null)
             existedUser.setImg(input.getImg());
 
         return jwtUtil.sign(userRepository.save(existedUser));
@@ -148,9 +140,11 @@ public class UserService {
     @Secured("ROLE_ADMIN")
     public UserEntity createUser(CreateUserDTO input) throws NoSuchAlgorithmException {
         Set<RoleEntity> roles = new HashSet<>();
-        roles.add(new RoleEntity(RoleEnum.ROLE_USER));
+
         if(input.isAdmin())
             roles.add(new RoleEntity(RoleEnum.ROLE_ADMIN));
+        else
+            roles.add(new RoleEntity(RoleEnum.ROLE_USER));
 
         // If username has existed
         UserEntity existedUsername = userRepository.findByUsername(input.getUsername());
