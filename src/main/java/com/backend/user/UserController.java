@@ -26,7 +26,7 @@ public class UserController {
 
     // 4.2
     @PostMapping()
-    public UserEntity createUser(@RequestBody() CreateUserDTO input) {
+    public UserEntity createUser(@RequestBody() CreateUserDTO input) throws NoSuchAlgorithmException {
         return userService.createUser(input);
     }
 
