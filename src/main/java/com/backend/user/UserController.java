@@ -61,6 +61,7 @@ public class UserController {
     }
 
     // 4.10
+    @Deprecated
     @PutMapping("/password/{id}")
     public UserEntity changePassword(@PathVariable("id") String id, @RequestBody ChangePasswordDTO input) throws NoSuchAlgorithmException {
         return userService.changePassword(id, input);

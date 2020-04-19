@@ -58,11 +58,12 @@ public class UserService {
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, ""));
     }
 
-
+    @Secured("ROLE_ADMIN")
     public List<UserEntity> getAllUser() throws ArrayStoreException{
         return userRepository.findAll();
     }
 
+    @Secured("ROLE_ADMIN")
     public UserEntity deleteUser(String id) throws Exception{
         UserEntity user = userRepository.findById(id).orElse(null);
 
@@ -156,6 +157,7 @@ public class UserService {
         return userRepository.save(userToCreate);
     }
 
+    @Deprecated
     public UserEntity changePassword(String id, ChangePasswordDTO input) throws NoSuchAlgorithmException {
         UserEntity existed = userRepository.findById(id).orElse(null);
         String hashedOldPassword = HashService.hash(input.getOldPassword());
