@@ -35,6 +35,10 @@ public class MovieService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    public List<MovieEntity> allMovies(){
+        return movieRepository.findAll();
+    }
+
     @Secured("ROLE_ADMIN")
     public MovieEntity createMovie(CreateMovieDTO input){
         MovieEntity toCreateMovie = new MovieEntity();

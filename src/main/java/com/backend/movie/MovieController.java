@@ -17,6 +17,10 @@ public class MovieController {
     private MovieService movieService;
 
     // 1.2
+    @GetMapping()
+    public List<MovieEntity> allMovies(){ return movieService.allMovies(); }
+
+    // 1.2
     @GetMapping("filter")
     public List<MovieEntity> filterMovie(MovieFilterDTO input){
         return movieService.filterMovie(input);
