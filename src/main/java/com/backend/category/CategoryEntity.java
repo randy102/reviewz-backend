@@ -25,4 +25,5 @@ public class CategoryEntity {
         this.id = id;
         this.name = name;
     }
+
 }
