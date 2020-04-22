@@ -1,13 +1,11 @@
 package com.backend.user;
 import com.backend.RouteConfig;
 
-import com.backend.image.ImageEntity;
 import com.backend.user.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.security.NoSuchAlgorithmException;
 
 
