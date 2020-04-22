@@ -120,14 +120,13 @@ public class MovieService {
         if(existed == null)
             throw Error.NotFoundError("Movie");
 
-        MatchOperation match = Aggregation.match(Criteria.where("_id").in(existed.getCategories()));
-
-        AggregationResults<CategoryEntity> result = mongoTemplate.aggregate(Aggregation.newAggregation(match), "mr_category", CategoryEntity.class);
+        Query query = new Query(Criteria.where("_id").in(existed.getCategories()));
+        List<CategoryEntity> result = mongoTemplate.find(query, CategoryEntity.class);
 
         MovieDetailDTO detail = new MovieDetailDTO();
         BeanUtils.copyProperties(existed, detail);
 
-        detail.setCategoriesObj(result.getMappedResults());
+        detail.setCategories(result);
 
         return detail;
     }
