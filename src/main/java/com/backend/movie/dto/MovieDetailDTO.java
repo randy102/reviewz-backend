@@ -10,13 +10,7 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 @NoArgsConstructor
-public class MovieDetailDTO {
-    @Id private String id;
-    @NonNull private List<CategoryEntity> categories;
-    @NonNull private String img;
-    @NonNull private String nameVn;
-    @NonNull private String nameEn;
-    @NonNull private String summary;
-    @NonNull private long releaseDate;
-    @NonNull private long createdAt;
+public class MovieDetailDTO extends MovieResponseDTO {
+    @NonNull private List<CategoryEntity> categoriesObj;
+
 }

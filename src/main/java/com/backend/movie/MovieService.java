@@ -171,13 +171,21 @@ public class MovieService {
         if(existed == null)
             throw Error.NotFoundError("Movie");
 
-        Query query = new Query(Criteria.where("_id").in(existed.getCategories()));
-        List<CategoryEntity> result = mongoTemplate.find(query, CategoryEntity.class);
+        List<AggregationOperation> pipe = new ArrayList<>();
+        pipe.add(Aggregation.match(Criteria.where("_id").is(id)));
+        pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConvertOperators.ToString.toString("$_id")).as("_id"));
+        pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
+        pipe.add(Aggregation.project(MovieResponseDTO.class).and(AccumulatorOperators.Avg.avgOf("reviews.star")).as("starAvg"));
+        pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConditionalOperators.IfNull.ifNull("starAvg").then(0)).as("starAvg"));
+        MovieResponseDTO movie = mongoTemplate.aggregate(Aggregation.newAggregation(pipe), "mr_movie", MovieResponseDTO.class).getMappedResults().get(0);
+
+        Query categoryQuery = new Query(Criteria.where("_id").in(existed.getCategories()));
+        List<CategoryEntity> categories = mongoTemplate.find(categoryQuery, CategoryEntity.class);
 
         MovieDetailDTO detail = new MovieDetailDTO();
-        BeanUtils.copyProperties(existed, detail);
 
-        detail.setCategories(result);
+        BeanUtils.copyProperties(movie, detail);
+        detail.setCategoriesObj(categories);
 
         return detail;
     }
