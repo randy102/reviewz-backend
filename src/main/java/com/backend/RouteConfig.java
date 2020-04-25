@@ -25,10 +25,10 @@ public class RouteConfig {
 
         // Add Route below ... =>
         GET.add("/api/image/**");
+        GET.add("/api/movie/filter");
+        GET.add("/api/movie");
 
         POST.add("/api/user/login");
-        POST.add("/api/user/upload");
-
         POST.add("/api/user/register");
     }
 

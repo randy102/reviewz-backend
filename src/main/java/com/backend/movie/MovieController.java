@@ -1,11 +1,9 @@
 package com.backend.movie;
 
 import com.backend.RouteConfig;
-import com.backend.movie.dto.CreateMovieDTO;
-import com.backend.movie.dto.MovieDetailDTO;
-import com.backend.movie.dto.MovieFilterDTO;
-import com.backend.movie.dto.UpdateMovieDTO;
+import com.backend.movie.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +20,8 @@ public class MovieController {
 
     // 1.2
     @GetMapping("filter")
-    public List<MovieEntity> filterMovie(MovieFilterDTO input){
-        return movieService.filterMovie(input);
+    public List<MovieResponseDTO> filterMovie(MovieFilterDTO input){
+        return movieService.filterMovie_2(input);
     }
 
     // 1.4
@@ -34,18 +32,21 @@ public class MovieController {
 
     // 1.5
     @PostMapping()
+    @Secured("ROLE_ADMIN")
     public MovieEntity createMovie(@RequestBody CreateMovieDTO input){
         return movieService.createMovie(input);
     }
 
     // 1.6
     @PutMapping()
+    @Secured("ROLE_ADMIN")
     public MovieEntity updateMovie(@RequestBody UpdateMovieDTO input){
         return movieService.updateMovie(input);
     }
 
     // 1.7
     @DeleteMapping("{id}")
+    @Secured("ROLE_ADMIN")
     public MovieEntity deleteMovie(@PathVariable("id") String id){
         return movieService.deleteMovie(id);
     }

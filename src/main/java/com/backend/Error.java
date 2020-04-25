@@ -20,7 +20,7 @@ public class Error {
     }
 
     static public ResponseStatusException FormError(String object){
-        String message = "Wrong " + object.toLowerCase();
+        String message = "Invalid field: " + object.toLowerCase();
         return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
     }
 }
