@@ -40,6 +40,19 @@ public class ImageService {
         return result.getId();
     }
 
+    public String updateImage(String id, MultipartFile upload)throws IOException {
+        ImageEntity exited = imageRepository.findById(id).orElse(null);
+        if(exited == null) throw Error.NotFoundError("Image");
+
+        // TODO: Check file upload must be type png or jpg...
+
+        Binary imgBinary = new Binary(BsonBinarySubType.BINARY, upload.getBytes());
+        exited.setData(imgBinary);
+        imageRepository.save(exited);
+
+        return id;
+    }
+
     public ImageEntity deleteImage(String id) throws Exception{
         ImageEntity img = imageRepository.findById(id).orElse(null);
 

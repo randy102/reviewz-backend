@@ -38,10 +38,10 @@ public class MovieController {
     }
 
     // 1.6
-    @PutMapping()
+    @PutMapping("{id}")
     @Secured("ROLE_ADMIN")
-    public MovieEntity updateMovie(@RequestBody UpdateMovieDTO input){
-        return movieService.updateMovie(input);
+    public MovieEntity updateMovie(@PathVariable("id") String id , @RequestBody CreateMovieDTO input){
+        return movieService.updateMovie(id, input);
     }
 
     // 1.7

@@ -27,6 +27,11 @@ public class ImageController {
        return imageService.saveImage(upload);
     }
 
+    @PutMapping("{id}")
+    public String updateImg(@PathVariable("id") String id , @RequestParam("file") MultipartFile upload) throws IOException {
+        return imageService.updateImage(id, upload);
+    }
+
     //6.3
     @DeleteMapping("/{id}")
     public ImageEntity deleteImage(@PathVariable("id") String id) throws Exception{

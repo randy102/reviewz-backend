@@ -47,8 +47,8 @@ public class MovieService {
     }
 
 
-    public MovieEntity updateMovie(UpdateMovieDTO input){
-        MovieEntity existed = movieRepository.findById(input.getId()).orElse(null);
+    public MovieEntity updateMovie(String id, CreateMovieDTO input){
+        MovieEntity existed = movieRepository.findById(id).orElse(null);
         if(existed == null) throw Error.NotFoundError("Movie");
 
         BeanUtils.copyProperties(input, existed);
