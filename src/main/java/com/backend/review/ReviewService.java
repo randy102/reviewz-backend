@@ -1,15 +1,22 @@
 package com.backend.review;
 
 import com.backend.Error;
+import com.backend.movie.dto.MovieResponseDTO;
 import com.backend.review.dto.CreateReviewDTO;
+import com.backend.review.dto.ReviewResponseDTO;
 import com.backend.review.dto.UpdateReviewDTO;
 import com.backend.security.CurrentUser;
 import com.backend.security.RoleEnum;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,16 +26,43 @@ public class ReviewService {
 
     @Autowired ReviewRepository reviewRepository;
 
-    public List<ReviewEntity> getReviews(){
-        return reviewRepository.findAll();
+    @Autowired MongoTemplate mongoTemplate;
+
+    private List<AggregationOperation> joinAggregate(){
+        List<AggregationOperation> pipe = new ArrayList<>();
+        pipe.add(Aggregation.project(ReviewResponseDTO.class).and(ConvertOperators.ToObjectId.toObjectId("$idUser")).as("idUser"));
+        pipe.add(Aggregation.lookup("mr_user", "idUser", "_id", "user"));
+        pipe.add(Aggregation.unwind("user"));
+        pipe.add(Aggregation.project(ReviewResponseDTO.class).and(ConvertOperators.ToString.toString("$idUser")).as("idUser"));
+
+        pipe.add(Aggregation.project(ReviewResponseDTO.class).and(ConvertOperators.ToObjectId.toObjectId("$idMovie")).as("idMovie"));
+        pipe.add(Aggregation.lookup("mr_movie", "idMovie", "_id", "movie"));
+        pipe.add(Aggregation.unwind("movie"));
+        pipe.add(Aggregation.project(ReviewResponseDTO.class).and(ConvertOperators.ToString.toString("$idMovie")).as("idMovie"));
+        return pipe;
     }
 
-    public List<ReviewEntity> getReviewByMovie(String id){
-        return reviewRepository.findByIdMovie(id);
+    public List<ReviewResponseDTO> getReviews(){
+        List<AggregationOperation> pipe = joinAggregate();
+        return mongoTemplate
+                .aggregate(Aggregation.newAggregation(pipe), "mr_review", ReviewResponseDTO.class)
+                .getMappedResults();
     }
 
-    public List<ReviewEntity> getReviewByUser(String id){
-        return reviewRepository.findByIdUser(id);
+    public List<ReviewResponseDTO> getReviewByMovie(String id){
+        List<AggregationOperation> pipe = joinAggregate();
+        pipe.add(Aggregation.match(Criteria.where("idMovie").is(id)));
+        return mongoTemplate
+                .aggregate(Aggregation.newAggregation(pipe), "mr_review", ReviewResponseDTO.class)
+                .getMappedResults();
+    }
+
+    public List<ReviewResponseDTO> getReviewByUser(String id){
+        List<AggregationOperation> pipe = joinAggregate();
+        pipe.add(Aggregation.match(Criteria.where("idUser").is(id)));
+        return mongoTemplate
+                .aggregate(Aggregation.newAggregation(pipe), "mr_review", ReviewResponseDTO.class)
+                .getMappedResults();
     }
 
     public ReviewEntity createReview(CreateReviewDTO input){

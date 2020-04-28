@@ -23,4 +23,9 @@ public class Error {
         String message = "Invalid field: " + object.toLowerCase();
         return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
     }
+
+    static public ResponseStatusException UsedError(String object){
+        String message = object.toLowerCase() + "'ve been used";
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+    }
 }
