@@ -19,6 +19,6 @@ public class ReviewEntity {
     @NonNull private String idMovie;
     @NonNull private String content = "";
     @NonNull private @Max(10) @Min(1) int star;
-    @NonNull private boolean isVerified;
+    @NonNull private boolean verified;
     @NonNull private long createdAt;
 }
