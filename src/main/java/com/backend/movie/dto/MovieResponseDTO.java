@@ -13,4 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 public class MovieResponseDTO extends MovieEntity {
     private float starAvg;
+    private int rated;
 }

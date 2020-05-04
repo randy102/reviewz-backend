@@ -40,4 +40,5 @@ public class RouteConfig {
     public static final String REVIEW_BASE = API_BASE + "/review";
     public static final String IMAGE_BASE = API_BASE + "/image";
     public static final String CATEGORY_BASE = API_BASE + "/category";
+    public static final String REQUEST_BASE = API_BASE + "/request";
 }

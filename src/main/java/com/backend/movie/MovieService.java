@@ -67,6 +67,7 @@ public class MovieService {
         return existed;
     }
 
+    @Deprecated
     public List<MovieEntity> filterMovie(MovieFilterDTO input){
         Query query = new Query();
 
@@ -116,6 +117,7 @@ public class MovieService {
     public List<MovieResponseDTO> filterMovie_2(MovieFilterDTO input){
         List<AggregationOperation> pipe = new ArrayList<>();
 
+        // Keyword
         if(input.getKeyword() != null){
             pipe.add(Aggregation.match(new Criteria().orOperator(
                     Criteria.where("nameVnR").regex(input.getKeyword(),"gmi"),
@@ -124,10 +126,12 @@ public class MovieService {
             )));
         }
 
+        //Category
         if(input.getCategory() != null){
             pipe.add(Aggregation.match(Criteria.where("categories").is(input.getCategory())));
         }
 
+        // Year
         if(input.getYear() != 0){
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.YEAR, input.getYear());
@@ -143,23 +147,47 @@ public class MovieService {
             pipe.add(Aggregation.match(Criteria.where("releaseDate").gte(startYear).lte(endYear)));
         }
 
+        // Last released sort
         if(input.getLastRelease() != null && input.getLastRelease().equals("false"))
             pipe.add(Aggregation.sort(Sort.by(Sort.Direction.ASC, "releaseDate")));
-        else // Sort by default
+        else // Sort by default (newest first)
             pipe.add(Aggregation.sort(Sort.by(Sort.Direction.DESC, "releaseDate")));
 
+
+        // Skip
         if(input.getSkip() != 0){
             pipe.add(Aggregation.skip((long)input.getSkip()));
         }
 
+        //Limit
         if(input.getLimit() != 0){
             pipe.add(Aggregation.limit(input.getLimit()));
         }
 
+
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConvertOperators.ToString.toString("$_id")).as("_id"));
+
+        // Rated
+        pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
+        pipe.add(Aggregation.project(MovieResponseDTO.class).and(ArrayOperators.Size.lengthOfArray("reviews")).as("rated"));
+
+        // Sort by number of review
+        // ( highest first)
+        if(input.getMostRated() != null && input.getMostRated().equals("true")){
+            pipe.add(Aggregation.sort(Sort.by(Sort.Direction.DESC, "rated")));
+        }
+        //Star Avg
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(AccumulatorOperators.Avg.avgOf("reviews.star")).as("starAvg"));
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConditionalOperators.IfNull.ifNull("starAvg").then(0)).as("starAvg"));
+
+        // Sort by Star ( highest first)
+        if(input.getHighestStar() != null && input.getHighestStar().equals("true")){
+            pipe.add(Aggregation.sort(Sort.by(Sort.Direction.DESC, "starAvg")));
+        }
+
+
+
 
         Aggregation aggregation =  Aggregation.newAggregation(pipe);
 
