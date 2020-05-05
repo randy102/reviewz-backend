@@ -154,17 +154,6 @@ public class MovieService {
             pipe.add(Aggregation.sort(Sort.by(Sort.Direction.DESC, "releaseDate")));
 
 
-        // Skip
-        if(input.getSkip() != 0){
-            pipe.add(Aggregation.skip((long)input.getSkip()));
-        }
-
-        //Limit
-        if(input.getLimit() != 0){
-            pipe.add(Aggregation.limit(input.getLimit()));
-        }
-
-
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConvertOperators.ToString.toString("$_id")).as("_id"));
 
         // Rated
@@ -187,7 +176,15 @@ public class MovieService {
         }
 
 
+        // Skip
+        if(input.getSkip() != 0){
+            pipe.add(Aggregation.skip((long)input.getSkip()));
+        }
 
+        //Limit
+        if(input.getLimit() != 0){
+            pipe.add(Aggregation.limit(input.getLimit()));
+        }
 
         Aggregation aggregation =  Aggregation.newAggregation(pipe);
 
