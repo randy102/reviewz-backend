@@ -198,10 +198,19 @@ public class MovieService {
 
         List<AggregationOperation> pipe = new ArrayList<>();
         pipe.add(Aggregation.match(Criteria.where("_id").is(id)));
+
+        // Convert _id to string
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConvertOperators.ToString.toString("$_id")).as("_id"));
+
+        // Star Avg
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(AccumulatorOperators.Avg.avgOf("reviews.star")).as("starAvg"));
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConditionalOperators.IfNull.ifNull("starAvg").then(0)).as("starAvg"));
+
+        // Rated
+        pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
+        pipe.add(Aggregation.project(MovieResponseDTO.class).and(ArrayOperators.Size.lengthOfArray("reviews")).as("rated"));
+
         MovieResponseDTO movie = mongoTemplate.aggregate(Aggregation.newAggregation(pipe), "mr_movie", MovieResponseDTO.class).getMappedResults().get(0);
 
         Query categoryQuery = new Query(Criteria.where("_id").in(existed.getCategories()));
