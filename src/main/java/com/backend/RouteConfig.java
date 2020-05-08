@@ -28,6 +28,7 @@ public class RouteConfig {
         GET.add("/api/movie/filter");
         GET.add("/api/movie");
         GET.add("/api/movie/detail/*");
+        GET.add("/api/category");
 
         POST.add("/api/user/login");
         POST.add("/api/user/register");
