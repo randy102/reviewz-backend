@@ -45,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
 
         final String token = request.getHeader("Authorization");
-        System.out.println(request.getRemoteAddr() + request.getRemoteHost());
+        System.out.println(request.getRemoteAddr() + '-' +request.getHeaderNames());
 
         if (token == null)
             throw new ServletException("Not found: Token!");

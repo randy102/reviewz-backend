@@ -207,32 +207,32 @@ public class MovieService {
         pipe.add(Aggregation.match(Criteria.where("_id").is(id)));
 
         // Convert _id to string
-        pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConvertOperators.ToString.toString("$_id")).as("_id"));
+        pipe.add(Aggregation.project(MovieDetailDTO.class).and(ConvertOperators.ToString.toString("$_id")).as("_id"));
 
         // Reviews
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
 
         // Filter Reviews
-        pipe.add(Aggregation.project(MovieResponseDTO.class)
+        pipe.add(Aggregation.project(MovieDetailDTO.class)
                 .and(ArrayOperators.Filter.filter("$reviews").as("review").by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
                 .as("reviews"));
 
         // Star Avg
-        pipe.add(Aggregation.project(MovieResponseDTO.class).and(AccumulatorOperators.Avg.avgOf("reviews.star")).as("starAvg"));
-        pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConditionalOperators.IfNull.ifNull("starAvg").then(0)).as("starAvg"));
+        pipe.add(Aggregation.project(MovieDetailDTO.class).and(AccumulatorOperators.Avg.avgOf("reviews.star")).as("starAvg"));
+        pipe.add(Aggregation.project(MovieDetailDTO.class).and(ConditionalOperators.IfNull.ifNull("starAvg").then(0)).as("starAvg"));
 
 
         // Reviews
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
 
         // Filter Reviews
-        pipe.add(Aggregation.project(MovieResponseDTO.class)
+        pipe.add(Aggregation.project(MovieDetailDTO.class)
                 .and(ArrayOperators.Filter.filter("$reviews").as("review").by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
                 .as("reviews"));
         // Rated
-        pipe.add(Aggregation.project(MovieResponseDTO.class).and(ArrayOperators.Size.lengthOfArray("reviews")).as("rated"));
+        pipe.add(Aggregation.project(MovieDetailDTO.class).and(ArrayOperators.Size.lengthOfArray("reviews")).as("rated"));
 
-        MovieResponseDTO movie = mongoTemplate.aggregate(Aggregation.newAggregation(pipe), "mr_movie", MovieResponseDTO.class).getMappedResults().get(0);
+        MovieDetailDTO movie = mongoTemplate.aggregate(Aggregation.newAggregation(pipe), "mr_movie", MovieDetailDTO.class).getMappedResults().get(0);
 
         Query categoryQuery = new Query(Criteria.where("_id").in(existed.getCategories()));
         List<CategoryEntity> categories = mongoTemplate.find(categoryQuery, CategoryEntity.class);
