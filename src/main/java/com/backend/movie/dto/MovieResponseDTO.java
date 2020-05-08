@@ -15,5 +15,5 @@ import java.util.List;
 public class MovieResponseDTO extends MovieEntity {
     private float starAvg;
     private int rated;
-    private List<ReviewEntity> reviews;
+
 }
