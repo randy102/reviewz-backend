@@ -165,8 +165,15 @@ public class MovieService {
         if(input.getMostRated() != null && input.getMostRated().equals("true")){
             pipe.add(Aggregation.sort(Sort.by(Sort.Direction.DESC, "rated")));
         }
-        //Star Avg
+        // Reviews
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
+        // Filter Reviews
+        pipe.add(Aggregation.project(MovieResponseDTO.class)
+                .and(ArrayOperators.Filter.filter("$reviews")
+                        .as("review")
+                        .by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
+                .as("reviews"));
+        // Star Avg
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(AccumulatorOperators.Avg.avgOf("reviews.star")).as("starAvg"));
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConditionalOperators.IfNull.ifNull("starAvg").then(0)).as("starAvg"));
 
@@ -202,13 +209,27 @@ public class MovieService {
         // Convert _id to string
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConvertOperators.ToString.toString("$_id")).as("_id"));
 
-        // Star Avg
+        // Reviews
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
+
+        // Filter Reviews
+        pipe.add(Aggregation.project(MovieResponseDTO.class)
+                .and(ArrayOperators.Filter.filter("$reviews").as("review").by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
+                .as("reviews"));
+
+        // Star Avg
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(AccumulatorOperators.Avg.avgOf("reviews.star")).as("starAvg"));
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ConditionalOperators.IfNull.ifNull("starAvg").then(0)).as("starAvg"));
 
-        // Rated
+
+        // Reviews
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
+
+        // Filter Reviews
+        pipe.add(Aggregation.project(MovieResponseDTO.class)
+                .and(ArrayOperators.Filter.filter("$reviews").as("review").by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
+                .as("reviews"));
+        // Rated
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ArrayOperators.Size.lengthOfArray("reviews")).as("rated"));
 
         MovieResponseDTO movie = mongoTemplate.aggregate(Aggregation.newAggregation(pipe), "mr_movie", MovieResponseDTO.class).getMappedResults().get(0);
