@@ -45,7 +45,6 @@ public class JwtFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
 
         final String token = request.getHeader("Authorization");
-        System.out.println(request.getRemoteAddr() + '-' +request.getHeaderNames());
 
         if (token == null)
             throw new ServletException("Not found: Token!");
@@ -55,10 +54,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String jwt = token.substring(7);
 
-        if (!jwtUtil.verify(jwt))
+        if (!jwtUtil.verify(jwt,request.getRemoteAddr()))
             throw new ServletException("Token invalid");
 
-        Claims claims = jwtUtil.decode(jwt);
+        Claims claims = jwtUtil.decode(jwt, request.getRemoteAddr());
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         if (userDetails == null) throw new ServletException("Not found: User");

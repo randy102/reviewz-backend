@@ -14,7 +14,7 @@ import java.util.Map;
 public class JwtUtil {
     private String JWT_SECRET = "secret";
 
-    public String sign(UserEntity user){
+    public String sign(UserEntity user, String ip){
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("name", user.getUsername());
@@ -25,17 +25,17 @@ public class JwtUtil {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getUsername())
-                .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+                .signWith(SignatureAlgorithm.HS256, JWT_SECRET+ip)
                 .compact();
     }
 
-    public Claims decode(String token){
-        return Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
+    public Claims decode(String token, String ip){
+        return Jwts.parser().setSigningKey(JWT_SECRET+ip).parseClaimsJws(token).getBody();
     }
 
-    public Boolean verify(String token){
+    public Boolean verify(String token, String ip){
         try{
-            Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(JWT_SECRET+ip).parseClaimsJws(token);
             return true;
         }
         catch (JwtException err){

@@ -12,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
@@ -32,6 +33,9 @@ public class UserService {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private HttpServletRequest request;
+
     public String login(LoginDTO input) throws NoSuchAlgorithmException{
         UserEntity existedUser = userRepository.findByUsername(input.getUsername());
         if (existedUser == null)
@@ -41,7 +45,7 @@ public class UserService {
         if (!existedUser.getPassword().equals(hashedPassword))
             throw Error.FormError("Password");
 
-        return jwtUtil.sign(existedUser);
+        return jwtUtil.sign(existedUser, request.getRemoteAddr());
     }
 
 
@@ -128,7 +132,7 @@ public class UserService {
         if(input.getImg() != null)
             existedUser.setImg(input.getImg());
 
-        return jwtUtil.sign(userRepository.save(existedUser));
+        return jwtUtil.sign(userRepository.save(existedUser), request.getRemoteAddr());
     }
 
 
