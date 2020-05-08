@@ -24,12 +24,11 @@ public class CategoryService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Secured("ROLE_ADMIN")
     public List<CategoryEntity> getAllCategory() throws ArrayStoreException{
         return categoryRespository.findAll();
     }
 
-    @Secured("ROLE_ADMIN")
+
     public CategoryEntity createCategory(CreateCategoryDTO input) throws Exception{
         CategoryEntity existedCategory = categoryRespository.findByName(input.getName());
 
@@ -41,7 +40,7 @@ public class CategoryService {
         return categoryRespository.save(CategoryToCreate);
     }
 
-    @Secured("ROLE_ADMIN")
+
     public CategoryEntity updateCategory(String id, CreateCategoryDTO input) throws Exception{
         CategoryEntity existedCategory = categoryRespository.findById(id).orElse(null);
 
@@ -59,7 +58,7 @@ public class CategoryService {
         return categoryRespository.save(existedCategory);
     }
 
-    @Secured("ROLE_ADMIN")
+
     public CategoryEntity deleteCategory(String id) throws Exception {
         CategoryEntity existedCategory = categoryRespository.findById(id).orElse(null);
 
