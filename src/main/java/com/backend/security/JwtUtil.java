@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Service
 public class JwtUtil {
-    private String JWT_SECRET = "secret";
+    private final String JWT_SECRET = "secret";
 
     public String sign(UserEntity user, String ip){
         Map<String, Object> claims = new HashMap<>();

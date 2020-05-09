@@ -158,6 +158,12 @@ public class MovieService {
 
         // Rated
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
+        // Filter Reviews
+        pipe.add(Aggregation.project(MovieResponseDTO.class)
+                .and(ArrayOperators.Filter.filter("$reviews")
+                        .as("review")
+                        .by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
+                .as("reviews"));
         pipe.add(Aggregation.project(MovieResponseDTO.class).and(ArrayOperators.Size.lengthOfArray("reviews")).as("rated"));
 
         // Sort by number of review
