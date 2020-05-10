@@ -63,7 +63,6 @@ public class MovieService {
         if(existed == null) throw Error.NotFoundError("Movie");
 
         movieRepository.delete(existed);
-
         return existed;
     }
 

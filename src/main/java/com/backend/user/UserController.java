@@ -3,6 +3,7 @@ import com.backend.RouteConfig;
 
 import com.backend.user.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,14 @@ public class UserController {
 
     // 4.1
     @GetMapping()
+    @Secured("ROLE_ADMIN")
     public List<UserEntity> AllUser() throws ArrayIndexOutOfBoundsException {
         return userService.getAllUser();
     }
 
     // 4.2
     @PostMapping()
+    @Secured("ROLE_ADMIN")
     public UserEntity createUser(@RequestBody() CreateUserDTO input) throws NoSuchAlgorithmException {
         return userService.createUser(input);
     }
@@ -42,6 +45,7 @@ public class UserController {
 
     // 4.5
     @DeleteMapping("/{id}")
+    @Secured("ROLE_ADMIN")
     public UserEntity deleteUser(@PathVariable("id") String id) throws Exception {
         return userService.deleteUser(id);
     }

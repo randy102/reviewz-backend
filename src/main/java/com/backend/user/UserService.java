@@ -61,12 +61,12 @@ public class UserService {
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, ""));
     }
 
-    @Secured("ROLE_ADMIN")
+
     public List<UserEntity> getAllUser() throws ArrayStoreException{
         return userRepository.findAll();
     }
 
-    @Secured("ROLE_ADMIN")
+
     public UserEntity deleteUser(String id) throws Exception{
         UserEntity user = userRepository.findById(id).orElse(null);
 
@@ -89,7 +89,7 @@ public class UserService {
     }
 
     /**
-     * @forAdmin to reset password, change user's role
+     * @forAdmin change user's role
      * @forUser to change img, username
      * @return UserEntity
      */
@@ -135,8 +135,6 @@ public class UserService {
         return jwtUtil.sign(userRepository.save(existedUser), request.getRemoteAddr());
     }
 
-
-    @Secured("ROLE_ADMIN")
     public UserEntity createUser(CreateUserDTO input) throws NoSuchAlgorithmException {
         Set<RoleEntity> roles = new HashSet<>();
 
