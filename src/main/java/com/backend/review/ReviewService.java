@@ -108,4 +108,10 @@ public class ReviewService {
         reviewRepository.delete(exited);
         return exited;
     }
+
+    public List<ReviewEntity> deleteReviewsByMovie(String idMovie){
+        List<ReviewEntity> exitedReviews = reviewRepository.findByIdMovie(idMovie);
+        reviewRepository.deleteAll(exitedReviews);
+        return exitedReviews;
+    }
 }

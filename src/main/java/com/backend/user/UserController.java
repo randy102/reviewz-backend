@@ -44,11 +44,11 @@ public class UserController {
     }
 
     // 4.5
-    @DeleteMapping("/{id}")
-    @Secured("ROLE_ADMIN")
-    public UserEntity deleteUser(@PathVariable("id") String id) throws Exception {
-        return userService.deleteUser(id);
-    }
+//    @DeleteMapping("/{id}")
+//    @Secured("ROLE_ADMIN")
+//    public UserEntity deleteUser(@PathVariable("id") String id) throws Exception {
+//        return userService.deleteUser(id);
+//    }
 
     // 4.6
     @PostMapping("/register")

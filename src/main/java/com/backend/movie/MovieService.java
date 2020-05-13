@@ -3,6 +3,7 @@ package com.backend.movie;
 import com.backend.Error;
 import com.backend.category.CategoryEntity;
 import com.backend.movie.dto.*;
+import com.backend.review.ReviewService;
 import com.backend.security.CurrentUser;
 import com.backend.util.StringUtils;
 import com.mongodb.BasicDBObject;
@@ -30,6 +31,9 @@ public class MovieService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private ReviewService reviewService;
 
     public List<MovieEntity> allMovies(){
         return movieRepository.findAll();
@@ -63,6 +67,8 @@ public class MovieService {
         if(existed == null) throw Error.NotFoundError("Movie");
 
         movieRepository.delete(existed);
+        reviewService.deleteReviewsByMovie(existed.getId());
+
         return existed;
     }
 
