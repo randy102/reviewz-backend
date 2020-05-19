@@ -18,7 +18,7 @@ public class RequestController {
     @Secured("ROLE_ADMIN")
     @GetMapping()
     public List<RequestResponseDTO> getRequests(){
-        return requestService.getRequests();
+        return requestService.getAll();
     }
 
     @Secured("ROLE_ADMIN")
@@ -29,6 +29,6 @@ public class RequestController {
 
     @PostMapping()
     public RequestEntity createRequest(@RequestBody CreateRequestDTO input){
-        return requestService.createRequest(input);
+        return requestService.create(input);
     }
 }

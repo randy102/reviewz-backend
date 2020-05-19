@@ -20,7 +20,7 @@ public class ReviewController {
     // 3.1
     @GetMapping()
     public List<ReviewResponseDTO> getReviews(){
-        return reviewService.getReviews();
+        return reviewService.getAll();
     }
 
     // 3.2
@@ -45,19 +45,19 @@ public class ReviewController {
     // 3.4
     @PostMapping()
     public ReviewEntity createReview(@Valid @RequestBody CreateReviewDTO input) {
-        return reviewService.createReview(input);
+        return reviewService.create(input);
     }
 
     // 3.5
     @PutMapping("{id}")
     public ReviewEntity updateReview(@Valid @RequestBody UpdateReviewDTO input, @PathVariable("id") String id){
-        return reviewService.updateReview(id, input);
+        return reviewService.update(id, input);
     }
 
     // 3.6
     @DeleteMapping("{id}")
     @Secured("ROLE_ADMIN")
     public ReviewEntity deleteReview(@PathVariable("id") String id){
-        return reviewService.deleteReview(id);
+        return reviewService.delete(id);
     }
 }

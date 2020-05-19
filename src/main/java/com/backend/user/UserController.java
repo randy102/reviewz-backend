@@ -21,14 +21,14 @@ public class UserController {
     @GetMapping()
     @Secured("ROLE_ADMIN")
     public List<UserEntity> AllUser() throws ArrayIndexOutOfBoundsException {
-        return userService.getAllUser();
+        return userService.getAll();
     }
 
     // 4.2
     @PostMapping()
     @Secured("ROLE_ADMIN")
     public UserEntity createUser(@RequestBody() CreateUserDTO input) throws NoSuchAlgorithmException {
-        return userService.createUser(input);
+        return userService.create(input);
     }
 
     // 4.3
@@ -47,7 +47,7 @@ public class UserController {
 //    @DeleteMapping("/{id}")
 //    @Secured("ROLE_ADMIN")
 //    public UserEntity deleteUser(@PathVariable("id") String id) throws Exception {
-//        return userService.deleteUser(id);
+//        return userService.delete(id);
 //    }
 
     // 4.6

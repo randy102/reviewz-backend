@@ -4,6 +4,7 @@ import com.backend.Error;
 import com.backend.category.CategoryEntity;
 import com.backend.movie.dto.*;
 import com.backend.review.ReviewService;
+import com.backend.root.CRUD;
 import com.backend.security.CurrentUser;
 import com.backend.util.StringUtils;
 import com.mongodb.BasicDBObject;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class MovieService {
+public class MovieService implements CRUD<MovieEntity, CreateMovieDTO, CreateMovieDTO> {
     @Autowired
     private CurrentUser currentUser;
 
@@ -35,11 +36,15 @@ public class MovieService {
     @Autowired
     private ReviewService reviewService;
 
-    public List<MovieEntity> allMovies(){
+
+
+    @Override
+    public List<MovieEntity> getAll() {
         return movieRepository.findAll();
     }
 
-    public MovieEntity createMovie(CreateMovieDTO input){
+    @Override
+    public MovieEntity create(CreateMovieDTO input) {
         MovieEntity toCreateMovie = new MovieEntity();
 
         BeanUtils.copyProperties(input, toCreateMovie);
@@ -51,7 +56,8 @@ public class MovieService {
     }
 
 
-    public MovieEntity updateMovie(String id, CreateMovieDTO input){
+    @Override
+    public MovieEntity update(String id, CreateMovieDTO input) {
         MovieEntity existed = movieRepository.findById(id).orElse(null);
         if(existed == null) throw Error.NotFoundError("Movie");
 
@@ -62,7 +68,8 @@ public class MovieService {
         return movieRepository.save(existed);
     }
 
-    public MovieEntity deleteMovie(String id){
+    @Override
+    public MovieEntity delete(String id) {
         MovieEntity existed = movieRepository.findById(id).orElse(null);
         if(existed == null) throw Error.NotFoundError("Movie");
 

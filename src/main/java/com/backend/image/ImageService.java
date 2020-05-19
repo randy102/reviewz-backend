@@ -1,6 +1,7 @@
 package com.backend.image;
 
 import com.backend.Error;
+import com.backend.root.CRUD;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service

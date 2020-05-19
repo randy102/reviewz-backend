@@ -3,18 +3,18 @@ package com.backend.category;
 import com.backend.Error;
 import com.backend.category.dto.CreateCategoryDTO;
 import com.backend.movie.MovieEntity;
+import com.backend.root.CRUD;
 import com.backend.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CategoryService {
+public class CategoryService implements CRUD<CategoryEntity, CreateCategoryDTO, CreateCategoryDTO> {
     @Autowired
     private  CategoryRespository categoryRespository;
 
@@ -24,24 +24,25 @@ public class CategoryService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    public List<CategoryEntity> getAllCategory() throws ArrayStoreException{
+    @Override
+    public List<CategoryEntity> getAll() {
         return categoryRespository.findAll();
     }
 
-
-    public CategoryEntity createCategory(CreateCategoryDTO input) throws Exception{
+    @Override
+    public CategoryEntity create(CreateCategoryDTO input) {
         CategoryEntity existedCategory = categoryRespository.findByName(input.getName());
 
         if(existedCategory != null){
             throw Error.DuplicatedError("Category");
         }
-        CategoryEntity CategoryToCreate =new CategoryEntity(input.getName());
+        CategoryEntity CategoryToCreate = new CategoryEntity(input.getName());
 
         return categoryRespository.save(CategoryToCreate);
     }
 
-
-    public CategoryEntity updateCategory(String id, CreateCategoryDTO input) throws Exception{
+    @Override
+    public CategoryEntity update(String id, CreateCategoryDTO input) {
         CategoryEntity existedCategory = categoryRespository.findById(id).orElse(null);
 
         if(existedCategory == null){
@@ -49,8 +50,8 @@ public class CategoryService {
         }
 
         if(input.getName() != null){
-            CategoryEntity existedCategoryname = categoryRespository.findByName(input.getName());
-            if(existedCategoryname != null && !existedCategoryname.getId().equals(existedCategory.getId())) {
+            CategoryEntity existedCategoryName = categoryRespository.findByName(input.getName());
+            if(existedCategoryName != null && !existedCategoryName.getId().equals(existedCategory.getId())) {
                 throw Error.DuplicatedError("Category");
             }
             existedCategory.setName(input.getName());
@@ -58,8 +59,8 @@ public class CategoryService {
         return categoryRespository.save(existedCategory);
     }
 
-
-    public CategoryEntity deleteCategory(String id) throws Exception {
+    @Override
+    public CategoryEntity delete(String id) {
         CategoryEntity existedCategory = categoryRespository.findById(id).orElse(null);
 
         if(existedCategory == null){

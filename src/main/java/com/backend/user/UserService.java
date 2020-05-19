@@ -2,9 +2,11 @@ package com.backend.user;
 
 import com.backend.Error;
 import com.backend.image.ImageRepository;
+import com.backend.root.CRUD;
 import com.backend.security.*;
 import com.backend.user.dto.*;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @Service
-public class UserService {
+public class UserService implements CRUD<UserEntity, CreateUserDTO, UpdateUserDTO> {
     @Autowired
     private UserRepository userRepository;
 
@@ -61,13 +63,13 @@ public class UserService {
         return userRepository.save(new UserEntity(user.getUsername(), hashedPassword, roles, ""));
     }
 
-
-    public List<UserEntity> getAllUser() throws ArrayStoreException{
+    @Override
+    public List<UserEntity> getAll() throws ArrayStoreException{
         return userRepository.findAll();
     }
 
-
-    public UserEntity deleteUser(String id) throws Exception{
+    @Override
+    public UserEntity delete(String id){
         UserEntity user = userRepository.findById(id).orElse(null);
 
         if(user == null){
@@ -135,7 +137,9 @@ public class UserService {
         return jwtUtil.sign(userRepository.save(existedUser), request.getRemoteAddr());
     }
 
-    public UserEntity createUser(CreateUserDTO input) throws NoSuchAlgorithmException {
+    @SneakyThrows
+    @Override
+    public UserEntity create(CreateUserDTO input) {
         Set<RoleEntity> roles = new HashSet<>();
 
         if(input.isAdmin())
@@ -156,6 +160,12 @@ public class UserService {
         );
 
         return userRepository.save(userToCreate);
+    }
+
+    @Override
+    @Deprecated
+    public UserEntity update(String id, UpdateUserDTO input) {
+        return null;
     }
 
     @Deprecated

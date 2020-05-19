@@ -16,7 +16,7 @@ public class MovieController {
 
     // 1.2
     @GetMapping()
-    public List<MovieEntity> allMovies(){ return movieService.allMovies(); }
+    public List<MovieEntity> allMovies(){ return movieService.getAll(); }
 
     // 1.2
     @GetMapping("filter")
@@ -34,20 +34,20 @@ public class MovieController {
     @PostMapping()
     @Secured("ROLE_ADMIN")
     public MovieEntity createMovie(@RequestBody CreateMovieDTO input){
-        return movieService.createMovie(input);
+        return movieService.create(input);
     }
 
     // 1.6
     @PutMapping("{id}")
     @Secured("ROLE_ADMIN")
     public MovieEntity updateMovie(@PathVariable("id") String id , @RequestBody CreateMovieDTO input){
-        return movieService.updateMovie(id, input);
+        return movieService.update(id, input);
     }
 
     // 1.7
     @DeleteMapping("{id}")
     @Secured("ROLE_ADMIN")
     public MovieEntity deleteMovie(@PathVariable("id") String id){
-        return movieService.deleteMovie(id);
+        return movieService.delete(id);
     }
 }

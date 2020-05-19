@@ -1,10 +1,10 @@
 package com.backend.review;
 
 import com.backend.Error;
-import com.backend.movie.dto.MovieResponseDTO;
 import com.backend.review.dto.CreateReviewDTO;
 import com.backend.review.dto.ReviewResponseDTO;
 import com.backend.review.dto.UpdateReviewDTO;
+import com.backend.root.CRUD;
 import com.backend.security.CurrentUser;
 import com.backend.security.RoleEnum;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class ReviewService {
+public class ReviewService implements CRUD<ReviewResponseDTO, CreateReviewDTO, UpdateReviewDTO> {
     @Autowired CurrentUser currentUser;
 
     @Autowired ReviewRepository reviewRepository;
@@ -42,7 +42,8 @@ public class ReviewService {
         return pipe;
     }
 
-    public List<ReviewResponseDTO> getReviews(){
+    @Override
+    public List<ReviewResponseDTO> getAll() {
         List<AggregationOperation> pipe = joinAggregate();
         return mongoTemplate
                 .aggregate(Aggregation.newAggregation(pipe), "mr_review", ReviewResponseDTO.class)
@@ -65,7 +66,8 @@ public class ReviewService {
                 .getMappedResults();
     }
 
-    public ReviewEntity createReview(CreateReviewDTO input){
+    @Override
+    public ReviewResponseDTO create(CreateReviewDTO input) {
         ReviewEntity review = new ReviewEntity();
 
         BeanUtils.copyProperties(input, review);
@@ -73,19 +75,19 @@ public class ReviewService {
         review.setVerified(false);
         review.setCreatedAt(new Date().getTime());
 
-        return reviewRepository.save(review);
+        return (ReviewResponseDTO) reviewRepository.save(review);
     }
 
-    public ReviewEntity updateReview(String id, UpdateReviewDTO input){
+    @Override
+    public ReviewResponseDTO update(String id, UpdateReviewDTO input) {
         ReviewEntity exited = reviewRepository.findById(id).orElse(null);
         if(exited == null) throw Error.NotFoundError("Review");
 
         BeanUtils.copyProperties(input,exited);
         exited.setVerified(false);
 
-        return reviewRepository.save(exited);
+        return (ReviewResponseDTO) reviewRepository.save(exited);
     }
-
 
     public ReviewEntity verifyReview(String id){
         ReviewEntity exited = reviewRepository.findById(id).orElse(null);
@@ -95,7 +97,8 @@ public class ReviewService {
         return reviewRepository.save(exited);
     }
 
-    public ReviewEntity deleteReview(String id){
+    @Override
+    public ReviewResponseDTO delete(String id) {
         ReviewEntity exited = reviewRepository.findById(id).orElse(null);
         if(exited == null) throw Error.NotFoundError("Review");
 
@@ -106,12 +109,11 @@ public class ReviewService {
         }
 
         reviewRepository.delete(exited);
-        return exited;
+        return (ReviewResponseDTO) exited;
     }
 
-    public List<ReviewEntity> deleteReviewsByMovie(String idMovie){
+    public void deleteReviewsByMovie(String idMovie){
         List<ReviewEntity> exitedReviews = reviewRepository.findByIdMovie(idMovie);
         reviewRepository.deleteAll(exitedReviews);
-        return exitedReviews;
     }
 }
