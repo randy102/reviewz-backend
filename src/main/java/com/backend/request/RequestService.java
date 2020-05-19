@@ -68,24 +68,21 @@ public class RequestService implements CRUD<RequestResponseDTO, CreateRequestDTO
         return requestRepository.save(req);
     }
 
+
     @Override
+    @Deprecated
     public RequestResponseDTO create(CreateRequestDTO input) {
-        RequestEntity req = new RequestEntity();
-        BeanUtils.copyProperties(input, req);
-
-        req.setIdUser(currentUser.getInfo().getId());
-        req.setResolved(false);
-        req.setCreatedAt(new Date().getTime());
-
-        return (RequestResponseDTO) requestRepository.save(req);
+        return null;
     }
 
     @Override
+    @Deprecated
     public RequestResponseDTO update(String id, CreateRequestDTO input) {
         return null;
     }
 
     @Override
+    @Deprecated
     public RequestResponseDTO delete(String id) {
         return null;
     }

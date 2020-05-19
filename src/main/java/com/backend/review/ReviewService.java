@@ -50,6 +50,12 @@ public class ReviewService implements CRUD<ReviewResponseDTO, CreateReviewDTO, U
                 .getMappedResults();
     }
 
+    @Override
+    @Deprecated
+    public ReviewResponseDTO create(CreateReviewDTO input) {
+        return null;
+    }
+
     public List<ReviewResponseDTO> getReviewByMovie(String id){
         List<AggregationOperation> pipe = joinAggregate();
         pipe.add(Aggregation.match(Criteria.where("idMovie").is(id)));
@@ -66,8 +72,8 @@ public class ReviewService implements CRUD<ReviewResponseDTO, CreateReviewDTO, U
                 .getMappedResults();
     }
 
-    @Override
-    public ReviewResponseDTO create(CreateReviewDTO input) {
+
+    public ReviewEntity createReview(CreateReviewDTO input) {
         ReviewEntity review = new ReviewEntity();
 
         BeanUtils.copyProperties(input, review);
@@ -75,18 +81,24 @@ public class ReviewService implements CRUD<ReviewResponseDTO, CreateReviewDTO, U
         review.setVerified(false);
         review.setCreatedAt(new Date().getTime());
 
-        return (ReviewResponseDTO) reviewRepository.save(review);
+        return reviewRepository.save(review);
     }
 
-    @Override
-    public ReviewResponseDTO update(String id, UpdateReviewDTO input) {
+
+    public ReviewEntity updateReview(String id, UpdateReviewDTO input) {
         ReviewEntity exited = reviewRepository.findById(id).orElse(null);
         if(exited == null) throw Error.NotFoundError("Review");
 
         BeanUtils.copyProperties(input,exited);
         exited.setVerified(false);
 
-        return (ReviewResponseDTO) reviewRepository.save(exited);
+        return reviewRepository.save(exited);
+    }
+
+    @Override
+    @Deprecated
+    public ReviewResponseDTO update(String id, UpdateReviewDTO input) {
+        return null;
     }
 
     public ReviewEntity verifyReview(String id){

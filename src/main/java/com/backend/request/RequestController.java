@@ -29,6 +29,6 @@ public class RequestController {
 
     @PostMapping()
     public RequestEntity createRequest(@RequestBody CreateRequestDTO input){
-        return requestService.create(input);
+        return requestService.createRequest(input);
     }
 }

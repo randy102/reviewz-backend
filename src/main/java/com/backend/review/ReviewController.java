@@ -45,13 +45,13 @@ public class ReviewController {
     // 3.4
     @PostMapping()
     public ReviewEntity createReview(@Valid @RequestBody CreateReviewDTO input) {
-        return reviewService.create(input);
+        return reviewService.createReview(input);
     }
 
     // 3.5
     @PutMapping("{id}")
     public ReviewEntity updateReview(@Valid @RequestBody UpdateReviewDTO input, @PathVariable("id") String id){
-        return reviewService.update(id, input);
+        return reviewService.updateReview(id, input);
     }
 
     // 3.6
