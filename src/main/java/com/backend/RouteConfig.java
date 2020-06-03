@@ -29,6 +29,8 @@ public class RouteConfig {
         GET.add("/api/movie");
         GET.add("/api/movie/detail/**");
         GET.add("/api/category/**");
+        GET.add("/api/actor/**");
+        GET.add("/api/director/**");
         GET.add("/api/review/**");
 
         POST.add("/api/user/login");
@@ -43,4 +45,6 @@ public class RouteConfig {
     public static final String IMAGE_BASE = API_BASE + "/image";
     public static final String CATEGORY_BASE = API_BASE + "/category";
     public static final String REQUEST_BASE = API_BASE + "/request";
+    public static final String ACTOR_BASE = API_BASE + "/actor";
+    public static final String DIRECTOR_BASE = API_BASE + "/director";
 }
