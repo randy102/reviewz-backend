@@ -16,8 +16,8 @@ public class MovieFilterDTO {
     private String lastRelease; // false => most recently released , true/null => oldest released
     private String mostRated;
     private String highestStar;
-    private String actors;
-    private String directors;
+    private String actor;
+    private String director;
 
     private int limit; // Default 0 => no limit
     private int skip; // Default 0

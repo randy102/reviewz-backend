@@ -146,13 +146,13 @@ public class MovieService implements CRUD<MovieEntity, CreateMovieDTO, CreateMov
         }
 
         //Actor
-        if(input.getActors() != null){
-            pipe.add(Aggregation.match(Criteria.where("actors").is(input.getActors())));
+        if(input.getActor() != null){
+            pipe.add(Aggregation.match(Criteria.where("actors").is(input.getActor())));
         }
 
         //Director
-        if(input.getDirectors() != null){
-            pipe.add(Aggregation.match(Criteria.where("directors").is(input.getDirectors())));
+        if(input.getDirector() != null){
+            pipe.add(Aggregation.match(Criteria.where("directors").is(input.getDirector())));
         }
 
         // Year
