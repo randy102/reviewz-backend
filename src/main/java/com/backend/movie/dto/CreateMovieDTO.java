@@ -11,6 +11,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class CreateMovieDTO {
     private Set<String> categories;
+    private Set<String> actors;
+    private Set<String> directors;
     private String img;
     private String nameVn;
     private String nameEn;

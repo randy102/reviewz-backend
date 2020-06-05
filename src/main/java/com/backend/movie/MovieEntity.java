@@ -15,6 +15,8 @@ import java.util.Set;
 public class MovieEntity {
     @Id private String id;
     @NonNull private Set<String> categories;
+    @NonNull private Set<String> actors;
+    @NonNull private Set<String> directors;
     @NonNull private String img;
     @NonNull private String nameVn;
     @NonNull private String nameEn;
