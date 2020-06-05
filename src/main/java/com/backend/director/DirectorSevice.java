@@ -66,7 +66,7 @@ public class DirectorSevice implements CRUD< DirectorEntity,CreateDirectorDTO,Cr
             throw Error.NotFoundError("Director");
         }
 
-        Query query = new Query(Criteria.where("director").is(existedDirector.getId()));
+        Query query = new Query(Criteria.where("directors").is(existedDirector.getId()));
         List<MovieEntity> moviesOfCate = mongoTemplate.find(query, MovieEntity.class);
         if(moviesOfCate.size() > 0){
             throw Error.UsedError("Director");
