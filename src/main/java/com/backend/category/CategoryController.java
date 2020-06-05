@@ -15,27 +15,23 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    //2.1
     @GetMapping()
     public List<CategoryEntity> allCategory() throws Exception{
         return categoryService.getAll();
     }
 
-    //2.2
     @PostMapping()
     @Secured("ROLE_ADMIN")
     public CategoryEntity createCategory(@RequestBody() CreateCategoryDTO input) throws Exception{
         return categoryService.create(input);
     }
 
-    //2.3
     @PutMapping("/{id}")
     @Secured("ROLE_ADMIN")
     public CategoryEntity updateCategory(@PathVariable("id") String id, @RequestBody() CreateCategoryDTO input) throws Exception{
         return categoryService.update(id, input);
     }
 
-    //2.4
     @DeleteMapping("/{id}")
     @Secured("ROLE_ADMIN")
     public CategoryEntity deleteCategory(@PathVariable("id") String id) throws Exception{

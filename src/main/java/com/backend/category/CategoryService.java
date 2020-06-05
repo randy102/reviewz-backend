@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class CategoryService implements CRUD<CategoryEntity, CreateCategoryDTO, CreateCategoryDTO> {
     @Autowired
-    private  CategoryRespository categoryRespository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -26,42 +26,42 @@ public class CategoryService implements CRUD<CategoryEntity, CreateCategoryDTO, 
 
     @Override
     public List<CategoryEntity> getAll() {
-        return categoryRespository.findAll();
+        return categoryRepository.findAll();
     }
 
     @Override
     public CategoryEntity create(CreateCategoryDTO input) {
-        CategoryEntity existedCategory = categoryRespository.findByName(input.getName());
+        CategoryEntity existedCategory = categoryRepository.findByName(input.getName());
 
         if(existedCategory != null){
             throw Error.DuplicatedError("Category");
         }
         CategoryEntity CategoryToCreate = new CategoryEntity(input.getName());
 
-        return categoryRespository.save(CategoryToCreate);
+        return categoryRepository.save(CategoryToCreate);
     }
 
     @Override
     public CategoryEntity update(String id, CreateCategoryDTO input) {
-        CategoryEntity existedCategory = categoryRespository.findById(id).orElse(null);
+        CategoryEntity existedCategory = categoryRepository.findById(id).orElse(null);
 
         if(existedCategory == null){
             throw  Error.NotFoundError("Category");
         }
 
         if(input.getName() != null){
-            CategoryEntity existedCategoryName = categoryRespository.findByName(input.getName());
+            CategoryEntity existedCategoryName = categoryRepository.findByName(input.getName());
             if(existedCategoryName != null && !existedCategoryName.getId().equals(existedCategory.getId())) {
                 throw Error.DuplicatedError("Category");
             }
             existedCategory.setName(input.getName());
         }
-        return categoryRespository.save(existedCategory);
+        return categoryRepository.save(existedCategory);
     }
 
     @Override
     public CategoryEntity delete(String id) {
-        CategoryEntity existedCategory = categoryRespository.findById(id).orElse(null);
+        CategoryEntity existedCategory = categoryRepository.findById(id).orElse(null);
 
         if(existedCategory == null){
             throw Error.NotFoundError("Category");
@@ -72,7 +72,7 @@ public class CategoryService implements CRUD<CategoryEntity, CreateCategoryDTO, 
         if(moviesOfCate.size() > 0)
             throw Error.UsedError("Category");
 
-        categoryRespository.deleteById(id);
+        categoryRepository.deleteById(id);
 
         return existedCategory;
     }
