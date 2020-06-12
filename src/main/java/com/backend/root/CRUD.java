@@ -6,5 +6,5 @@ public interface CRUD<E, CreateDTO, UpdateDTO> {
     List<E> getAll();
     E create(CreateDTO input);
     public E update(String id, UpdateDTO input);
-    public E delete(String id);
+    public boolean delete(String id);
 }

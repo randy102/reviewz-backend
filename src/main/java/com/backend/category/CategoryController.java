@@ -34,7 +34,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @Secured("ROLE_ADMIN")
-    public CategoryEntity deleteCategory(@PathVariable("id") String id) throws Exception{
+    public boolean deleteCategory(@PathVariable("id") String id) throws Exception{
         return categoryService.delete(id);
     }
 

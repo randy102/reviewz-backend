@@ -110,7 +110,7 @@ public class ReviewService implements CRUD<ReviewResponseDTO, CreateReviewDTO, U
     }
 
     @Override
-    public ReviewResponseDTO delete(String id) {
+    public boolean delete(String id) {
         ReviewEntity exited = reviewRepository.findById(id).orElse(null);
         if(exited == null) throw Error.NotFoundError("Review");
 
@@ -121,7 +121,7 @@ public class ReviewService implements CRUD<ReviewResponseDTO, CreateReviewDTO, U
         }
 
         reviewRepository.delete(exited);
-        return (ReviewResponseDTO) exited;
+        return true;
     }
 
     public void deleteReviewsByMovie(String idMovie){

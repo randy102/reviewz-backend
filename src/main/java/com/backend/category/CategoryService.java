@@ -60,7 +60,7 @@ public class CategoryService implements CRUD<CategoryEntity, CreateCategoryDTO, 
     }
 
     @Override
-    public CategoryEntity delete(String id) {
+    public boolean delete(String id) {
         CategoryEntity existedCategory = categoryRepository.findById(id).orElse(null);
 
         if(existedCategory == null){
@@ -74,6 +74,6 @@ public class CategoryService implements CRUD<CategoryEntity, CreateCategoryDTO, 
 
         categoryRepository.deleteById(id);
 
-        return existedCategory;
+        return true;
     }
 }

@@ -34,7 +34,7 @@ public class ActorController {
 
     @DeleteMapping("/{id}")
     @Secured("ROLE_ADMIN")
-    public ActorEntity deleteActor(@PathVariable("id") String id) throws Exception{
+    public boolean deleteActor(@PathVariable("id") String id) throws Exception{
         return actorService.delete(id);
     }
 

@@ -34,7 +34,7 @@ public class ImageController {
 
     //6.3
     @DeleteMapping("/{id}")
-    public ImageEntity deleteImage(@PathVariable("id") String id) throws Exception{
+    public boolean deleteImage(@PathVariable("id") String id) throws Exception{
         return imageService.deleteImage(id);
     }
 

@@ -69,7 +69,7 @@ public class UserService implements CRUD<UserEntity, CreateUserDTO, UpdateUserDT
     }
 
     @Override
-    public UserEntity delete(String id){
+    public boolean delete(String id){
         UserEntity user = userRepository.findById(id).orElse(null);
 
         if(user == null){
@@ -77,7 +77,7 @@ public class UserService implements CRUD<UserEntity, CreateUserDTO, UpdateUserDT
         }
 
         userRepository.deleteById(id);
-        return user;
+        return true;
     }
 
     public UserEntity detailUser(String id) throws Exception {

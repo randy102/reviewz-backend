@@ -83,8 +83,8 @@ public class RequestService implements CRUD<RequestResponseDTO, CreateRequestDTO
 
     @Override
     @Deprecated
-    public RequestResponseDTO delete(String id) {
-        return null;
+    public boolean delete(String id) {
+        return true;
     }
 
     public RequestEntity resolveRequest(String id){

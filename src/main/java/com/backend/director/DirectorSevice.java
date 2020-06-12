@@ -59,7 +59,7 @@ public class DirectorSevice implements CRUD< DirectorEntity,CreateDirectorDTO,Cr
     }
 
     @Override
-    public DirectorEntity delete(String id) {
+    public boolean delete(String id) {
         DirectorEntity existedDirector = directorRepository.findById(id).orElse(null);
 
         if(existedDirector == null){
@@ -73,6 +73,6 @@ public class DirectorSevice implements CRUD< DirectorEntity,CreateDirectorDTO,Cr
         }
         directorRepository.deleteById(id);
 
-        return existedDirector;
+        return true;
     }
 }

@@ -71,14 +71,14 @@ public class MovieService implements CRUD<MovieEntity, CreateMovieDTO, CreateMov
     }
 
     @Override
-    public MovieEntity delete(String id) {
+    public boolean delete(String id) {
         MovieEntity existed = movieRepository.findById(id).orElse(null);
         if(existed == null) throw Error.NotFoundError("Movie");
 
         movieRepository.delete(existed);
         reviewService.deleteReviewsByMovie(existed.getId());
 
-        return existed;
+        return true;
     }
 
     @Deprecated
@@ -241,7 +241,6 @@ public class MovieService implements CRUD<MovieEntity, CreateMovieDTO, CreateMov
 
         // Reviews
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
-
         // Filter Reviews
         pipe.add(Aggregation.project(MovieDetailDTO.class)
                 .and(ArrayOperators.Filter.filter("$reviews").as("review").by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
@@ -254,11 +253,11 @@ public class MovieService implements CRUD<MovieEntity, CreateMovieDTO, CreateMov
 
         // Reviews
         pipe.add(Aggregation.lookup("mr_review","_id", "idMovie", "reviews"));
-
         // Filter Reviews
         pipe.add(Aggregation.project(MovieDetailDTO.class)
                 .and(ArrayOperators.Filter.filter("$reviews").as("review").by(ComparisonOperators.valueOf("review.verified").equalToValue(true)))
                 .as("reviews"));
+
         // Rated
         pipe.add(Aggregation.project(MovieDetailDTO.class).and(ArrayOperators.Size.lengthOfArray("reviews")).as("rated"));
 
@@ -270,15 +269,18 @@ public class MovieService implements CRUD<MovieEntity, CreateMovieDTO, CreateMov
         detail.setCategoriesObj(categories);
 
         //Actor
-        Query actorQuery = new Query(Criteria.where("_id").in(existed.getActors()));
-        List<ActorEntity> actors = mongoTemplate.find(actorQuery, ActorEntity.class);
-        detail.setActorsObj(actors);
+        if(existed.getActors() != null) {
+            Query actorQuery = new Query(Criteria.where("_id").in(existed.getActors()));
+            List<ActorEntity> actors = mongoTemplate.find(actorQuery, ActorEntity.class);
+            detail.setActorsObj(actors);
+        }
 
-        //Actor
-        Query directorQuery = new Query(Criteria.where("_id").in(existed.getDirectors()));
-        List<DirectorEntity> directors = mongoTemplate.find(directorQuery, DirectorEntity.class);
-        detail.setDirectorsObj(directors);
-
+        //Director
+        if(existed.getDirectors() != null) {
+            Query directorQuery = new Query(Criteria.where("_id").in(existed.getDirectors()));
+            List<DirectorEntity> directors = mongoTemplate.find(directorQuery, DirectorEntity.class);
+            detail.setDirectorsObj(directors);
+        }
         return detail;
     }
 }

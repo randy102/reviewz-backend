@@ -33,7 +33,7 @@ public class DirectorController {
 
     @DeleteMapping("/{id}")
     @Secured("ROLE_ADMIN")
-    public DirectorEntity deleteDirector(@PathVariable("id") String id ) throws Exception{
+    public boolean deleteDirector(@PathVariable("id") String id ) throws Exception{
         return directorSevice.delete( id );
     }
 }

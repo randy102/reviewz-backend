@@ -55,7 +55,7 @@ public class ImageService {
         return id;
     }
 
-    public ImageEntity deleteImage(String id) throws Exception{
+    public boolean deleteImage(String id) throws Exception{
         ImageEntity img = imageRepository.findById(id).orElse(null);
 
         if (img == null){
@@ -63,7 +63,7 @@ public class ImageService {
         }
 
         imageRepository.deleteById(id);
-        return img;
+        return true;
     }
 }
 

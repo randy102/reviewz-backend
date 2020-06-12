@@ -57,7 +57,7 @@ public class ReviewController {
     // 3.6
     @DeleteMapping("{id}")
     @Secured("ROLE_ADMIN")
-    public ReviewEntity deleteReview(@PathVariable("id") String id){
+    public boolean deleteReview(@PathVariable("id") String id){
         return reviewService.delete(id);
     }
 }

@@ -60,7 +60,7 @@ public class ActorSevice implements CRUD<ActorEntity, CreateActorDTO,CreateActor
     }
 
     @Override
-    public  ActorEntity delete(String id){
+    public  boolean delete(String id){
         ActorEntity existedActor = actorRepository.findById(id).orElse(null);
 
         if(existedActor == null){
@@ -74,6 +74,6 @@ public class ActorSevice implements CRUD<ActorEntity, CreateActorDTO,CreateActor
 
         actorRepository.deleteById(id);
 
-        return existedActor;
+        return true;
     }
 }

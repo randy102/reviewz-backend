@@ -47,7 +47,7 @@ public class MovieController {
     // 1.7
     @DeleteMapping("{id}")
     @Secured("ROLE_ADMIN")
-    public MovieEntity deleteMovie(@PathVariable("id") String id){
+    public boolean deleteMovie(@PathVariable("id") String id){
         return movieService.delete(id);
     }
 }
